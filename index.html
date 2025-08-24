@@ -92,6 +92,15 @@
             border-left-color: #ec4899;
         }
 
+        .stat-card.account-balance {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-left: none;
+            font-size: 1rem;
+            padding: 1rem;
+        }
+
         .stat-title {
             font-size: 0.6rem;
             color: #64748b;
@@ -101,10 +110,19 @@
             margin-bottom: 0.25rem;
         }
 
+        .stat-card.account-balance .stat-title {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
         .stat-amount {
             font-size: 0.9rem;
             font-weight: 600;
             color: #1e293b;
+        }
+
+        .stat-card.account-balance .stat-amount {
+            color: white;
+            font-size: 1.2rem;
         }
 
         /* Date Filter Section */
@@ -136,13 +154,6 @@
             color: #1e293b;
             cursor: pointer;
             transition: all 0.2s ease;
-            position: absolute;
-            right: 0;
-            top: 30px;
-            z-index: 10;
-            opacity: 0;
-            pointer-events: none;
-            visibility: hidden;
         }
 
         .date-picker:focus {
@@ -167,12 +178,6 @@
             background: #f1f5f9;
             color: #10b981;
             transform: scale(1.1);
-        }
-
-        .selected-date-display {
-            font-size: 0.75rem;
-            color: #64748b;
-            margin-left: 0.25rem;
         }
 
         /* Button Styles */
@@ -507,10 +512,19 @@
             color: white;
             cursor: pointer;
             transition: background 0.2s ease;
+            margin-bottom: 0.5rem;
         }
 
         .nav-btn:hover {
             background: #d97706;
+        }
+
+        .nav-btn.account {
+            background: #667eea;
+        }
+
+        .nav-btn.account:hover {
+            background: #5a6fd8;
         }
 
         /* Lend items */
@@ -584,8 +598,9 @@
                 font-size: 0.8rem;
             }
 
-            /* Monthly lend still spans full width */
-            .stat-card.monthly-lend {
+            /* Monthly lend and account balance still span full width */
+            .stat-card.monthly-lend,
+            .stat-card.account-balance {
                 grid-column: 1 / -1;
             }
 
@@ -690,7 +705,7 @@
                 <input type="hidden" id="selectedSub" />
                 <input type="hidden" id="dateTime" />
 
-                <div class="button-row">
+                <div class="button-container">
                     <button type="submit" class="btn-primary">💾 Save Expense</button>
                     <button type="button" class="btn-secondary" id="cancelFormBtn">❌ Cancel</button>
                 </div>
@@ -705,6 +720,11 @@
         <h2>📊 Dashboard</h2>
 
         <div class="stats-grid">
+            <div class="stat-card account-balance">
+                <div class="stat-title">Account Balance</div>
+                <div class="stat-amount" id="accountBalance">₹0</div>
+            </div>
+
             <div class="stat-card today-total">
                 <div class="stat-title">Today Total</div>
                 <div class="stat-amount" id="todayTotal">₹0</div>
@@ -729,6 +749,7 @@
                 <div class="stat-title">Monthly Lend (Pending)</div>
                 <div class="stat-amount" id="monthlyLend">₹0</div>
                 <button class="nav-btn" id="showLend">View Lend Records</button>
+                <button class="nav-btn account" id="showAccount">View Account Tracker</button>
             </div>
         </div>
     </div>
@@ -794,6 +815,7 @@
         let selectedPayment = '';
         let selectedSub = 'Superyes'; // Default for UPI
         let selectedDate = ''; // For date filtering
+        let currentAccountBalance = 0;
 
         // Helper functions
         function getIndianDateTime() {
@@ -876,7 +898,7 @@
             });
         }
 
-        // FIXED: Generate unique lend ID by checking ALL existing IDs
+        // Generate unique lend ID by checking ALL existing IDs
         async function generateLendId(dateId) {
             try {
                 console.log('Generating lend ID for date:', dateId);
@@ -919,12 +941,115 @@
             }
         }
 
+        // Account integration functions
+        async function getNextAccountTransactionId() {
+            try {
+                const counterRef = db.collection('counters').doc('transactionCounter');
+                
+                // First, try to get existing counter
+                const counterDoc = await counterRef.get();
+                
+                if (counterDoc.exists) {
+                    const currentCount = counterDoc.data().count;
+                    const newCount = currentCount + 1;
+                    
+                    // Update counter
+                    await counterRef.update({ count: newCount });
+                    console.log('Generated account transaction ID:', `tnx_${newCount}`);
+                    return `tnx_${newCount}`;
+                } else {
+                    // Initialize counter with 1
+                    await counterRef.set({ count: 1 });
+                    console.log('Generated account transaction ID: tnx_1');
+                    return 'tnx_1';
+                }
+            } catch (error) {
+                console.error('Error in getNextAccountTransactionId:', error);
+                
+                // Simple fallback - just get count of existing documents + 1
+                try {
+                    const snapshot = await db.collection('account').get();
+                    const nextId = snapshot.size + 1;
+                    console.log('Fallback generated account ID:', `tnx_${nextId}`);
+                    return `tnx_${nextId}`;
+                } catch (fallbackError) {
+                    console.error('Account fallback also failed:', fallbackError);
+                    // Last resort - use a simple number
+                    const simpleId = Math.floor(Math.random() * 10000) + 1;
+                    return `tnx_${simpleId}`;
+                }
+            }
+        }
+
+        async function createAccountTransaction(expenseData, expenseId) {
+            try {
+                console.log('Creating account transaction for expense:', expenseId, expenseData);
+                
+                // Get the incremental transaction ID
+                const transactionId = await getNextAccountTransactionId();
+                
+                // Calculate new balance (debit for expense)
+                const newBalance = currentAccountBalance - expenseData.amount;
+                
+                // Create account transaction
+                const accountTransaction = {
+                    amount: expenseData.amount,
+                    type: 'debit',
+                    method: expenseData.subMethod || expenseData.paymentMode,
+                    description: `Expense: ${expenseData.category} - ${expenseData.description || 'No description'}`,
+                    timestamp: firebase.firestore.Timestamp.now(),
+                    update_bal: newBalance,
+                    linked_expense_id: expenseId,
+                    auto_created: true
+                };
+                
+                // Add transaction to account collection
+                await db.collection("account").doc(transactionId).set(accountTransaction);
+                
+                console.log('Account transaction created successfully:', transactionId);
+                
+                // Update current balance
+                currentAccountBalance = newBalance;
+                updateAccountBalanceDisplay();
+                
+                return transactionId;
+            } catch (error) {
+                console.error('Error creating account transaction:', error);
+                throw error;
+            }
+        }
+
+        async function loadAccountBalance() {
+            try {
+                // Get all account transactions and calculate current balance
+                const snapshot = await db.collection("account").orderBy("timestamp", "desc").limit(1).get();
+                
+                if (!snapshot.empty) {
+                    const latestTransaction = snapshot.docs[0].data();
+                    currentAccountBalance = latestTransaction.update_bal || 0;
+                } else {
+                    currentAccountBalance = 0;
+                }
+                
+                updateAccountBalanceDisplay();
+            } catch (error) {
+                console.error('Error loading account balance:', error);
+                currentAccountBalance = 0;
+                updateAccountBalanceDisplay();
+            }
+        }
+
+        function updateAccountBalanceDisplay() {
+            document.getElementById('accountBalance').textContent = formatCurrency(currentAccountBalance);
+        }
+
         // DOM elements
         const expenseForm = document.getElementById('expenseForm');
         const splitForm = document.getElementById('splitForm');
         const expenseList = document.getElementById('expenseList');
         const dateTimeInput = document.getElementById('dateTime');
         const showLendBtn = document.getElementById('showLend');
+        const showAccountBtn = document.getElementById('showAccount');
         const splitModal = document.getElementById('splitModal');
         const closeModal = document.getElementById('closeModal');
         const toggleFormBtn = document.getElementById('toggleFormBtn');
@@ -948,9 +1073,6 @@
             e.stopPropagation();
             datePicker.showPicker(); // This directly opens the native date picker
         });
-
-        // Remove the hide/show functionality since we're opening native picker directly
-        // No need for click outside handler anymore
 
         // Date picker change event
         datePicker.addEventListener('change', (e) => {
@@ -1076,7 +1198,6 @@
             resetForm();
         });
 
-
         function resetForm() {
             expenseForm.reset();
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
@@ -1089,7 +1210,7 @@
             selectedSub = '';
         }
 
-        // FIXED: Dashboard stats update - Get ALL lend records regardless of dateId field
+        // Dashboard stats update
         async function updateDashboard() {
             try {
                 const today = getTodayDateId();
@@ -1101,7 +1222,7 @@
 
                 const expenseSnap = await expenseQuery.get();
 
-                // FIXED: Get ALL lend records and filter them manually by date pattern
+                // Get ALL lend records and filter them manually by date pattern
                 const allLendSnap = await db.collection('lend').get();
 
                 let todayTotal = 0;
@@ -1129,7 +1250,7 @@
                     }
                 });
 
-                // FIXED: Process ALL lend records and filter by current month/year pattern
+                // Process ALL lend records and filter by current month/year pattern
                 allLendSnap.forEach(doc => {
                     const data = doc.data();
                     const docId = doc.id;
@@ -1146,7 +1267,6 @@
                         // Only count if it's from current month/year and status is pending
                         if (lendMonth === month && lendYear === year && status === 'pending') {
                             monthlyLend += data.amount || 0;
-                            console.log('Adding lend record:', docId, 'Amount:', data.amount, 'Status:', status);
                         }
                     }
                     // Also check dateId field as fallback (for records with dateId field)
@@ -1159,13 +1279,10 @@
                             
                             if (lendMonth === month && lendYear === year && status === 'pending') {
                                 monthlyLend += data.amount || 0;
-                                console.log('Adding lend record via dateId:', docId, 'Amount:', data.amount, 'Status:', status);
                             }
                         }
                     }
                 });
-
-                console.log('Final monthly lend total (pending only):', monthlyLend);
 
                 document.getElementById('todayTotal').textContent = formatCurrency(todayTotal);
                 document.getElementById('todayUpiCash').textContent = formatCurrency(todayUpiCash);
@@ -1178,7 +1295,7 @@
             }
         }
 
-        // Form submission
+        // Form submission with account integration
         expenseForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -1226,8 +1343,25 @@
                     data.subMethod = selectedSub;
                 }
 
+                // Save the expense
                 await db.collection('expenses').doc(newId).set(data);
-                showMessage(`✅ Expense saved as ${newId}`);
+
+                // Auto-create account transaction for UPI payments
+                let accountTransactionId = null;
+                const isUpiPayment = selectedPayment.toLowerCase() === 'upi' || 
+                                   (selectedPayment.toLowerCase().includes('upi'));
+
+                if (isUpiPayment) {
+                    try {
+                        accountTransactionId = await createAccountTransaction(data, newId);
+                        showMessage(`✅ Expense saved as ${newId} + Account debited (${accountTransactionId})`);
+                    } catch (accountError) {
+                        console.error('Account transaction failed:', accountError);
+                        showMessage(`✅ Expense saved as ${newId} (Account sync failed)`, false);
+                    }
+                } else {
+                    showMessage(`✅ Expense saved as ${newId}`);
+                }
 
                 // Reset form and hide
                 resetForm();
@@ -1253,7 +1387,7 @@
             }
         });
 
-        // FIXED: Split form submission - Use improved lend ID generation
+        // Split form submission
         splitForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -1278,7 +1412,7 @@
                 const currentDateTimeISO = currentDateTime.toISOString();
                 const currentDateId = formatDateId(currentDateTime);
 
-                // FIXED: Use the new lend ID generation function
+                // Use the lend ID generation function
                 const lendId = await generateLendId(currentDateId);
 
                 const splitData = {
@@ -1371,16 +1505,16 @@
                     });
 
                     div.innerHTML = `
-            <div class="item-header">
-              <div class="item-category">${d.category}</div>
-              <div class="item-payment">${d.paymentMode}${d.subMethod ? ` (${d.subMethod})` : ''}</div>
-            </div>
-            <div class="item-description">${d.description || ''}</div>
-            <div class="item-footer">
-              <div class="item-date">${formattedDate}</div>
-              <div class="item-amount">${formatCurrency(d.amount)}</div>
-            </div>
-          `;
+                        <div class="item-header">
+                          <div class="item-category">${d.category}</div>
+                          <div class="item-payment">${d.paymentMode}${d.subMethod ? ` (${d.subMethod})` : ''}</div>
+                        </div>
+                        <div class="item-description">${d.description || ''}</div>
+                        <div class="item-footer">
+                          <div class="item-date">${formattedDate}</div>
+                          <div class="item-amount">${formatCurrency(d.amount)}</div>
+                        </div>
+                    `;
 
                     const btn = document.createElement('button');
                     btn.textContent = 'Split';
@@ -1411,12 +1545,16 @@
 
         // Navigation
         showLendBtn.addEventListener('click', () => {
-            // Navigate to lend.html on the same page
             window.location.href = 'lend.html';
         });
 
+        // Account tracker navigation
+        showAccountBtn.addEventListener('click', () => {
+            window.location.href = 'account.html';
+        });
 
-        // Initial load
+        // Initial load - includes account balance
+        loadAccountBalance();
         updateDashboard();
         loadExpenses();
     </script>
