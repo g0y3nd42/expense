@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lend Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+        :root {
+      --primary-color: #1a1a1a;
+      --accent-blue: #2563eb;
+      --accent-green: #10b981;
+      --accent-orange: #f59e0b;
+      --accent-red: #ef4444;
+      --background: #f8f9fa;
+      --card-bg: #ffffff;
+      --border: #e9ecef;
+      --text-primary: #1a1a1a;
+      --text-secondary: #6c757d;
+      --text-light: #adb5bd;
+      --shadow: 0 2px 4px rgba(0,0,0,0.1);
+      --shadow-lg: 0 4px 12px rgba(0,0,0,0.15);
+      --radius: 12px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--background);
+      color: var(--text-primary);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 428px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      min-height: 100vh;
+    }
+
+    .header {
+      padding: 16px 20px 12px;
+      text-align: center;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header h1 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .main-content {
+      padding: 16px;
+      background: var(--background);
+    }
+
+    .form-container {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      animation: slideDown 0.3s ease;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group.full-width {
+      grid-column: span 2;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 500;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      background: var(--card-bg);
+      color: var(--text-primary);
+      transition: border-color 0.2s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-light);
+    }
+
+    .payment-methods {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .payment-method {
+      padding: 8px 6px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--card-bg);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .payment-method:hover {
+      border-color: var(--accent-blue);
+    }
+
+    .payment-method.active {
+      border-color: var(--accent-blue);
+      background: var(--accent-blue);
+      color: white;
+    }
+
+    .form-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--accent-green);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #059669;
+    }
+
+    .btn-secondary {
+      background: var(--background);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .filters {
+      display: flex;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 4px;
+      gap: 4px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .filter-btn {
+      flex: 1;
+      padding: 8px 12px;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn.active {
+      background: var(--accent-blue);
+      color: white;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+    }
+
+    .entries-list {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .entry-item {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      position: relative;
+    }
+
+    .entry-item:last-child {
+      border-bottom: none;
+    }
+
+    .entry-item.received {
+      background: rgba(16, 185, 129, 0.02);
+    }
+
+    .entry-item.received::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--accent-green);
+    }
+
+    .entry-left {
+      flex: 1;
+    }
+
+    .entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .entry-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+
+    .entry-amount {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--accent-blue);
+    }
+
+    .entry-details {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 3px;
+    }
+
+    .entry-detail {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .entry-description {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 3px;
+    }
+
+    .entry-time {
+      font-size: 0.7rem;
+      color: var(--text-light);
+    }
+
+    .entry-action {
+      padding: 6px 10px;
+      background: var(--accent-blue);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .entry-action:hover:not(:disabled) {
+      background: #1d4ed8;
+    }
+
+    .entry-action:disabled {
+      background: var(--accent-green);
+      cursor: not-allowed;
+      font-size: 0.65rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--text-secondary);
+    }
+
+    .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      opacity: 0.5;
+    }
+
+    .empty-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-primary);
+    }
+
+    .empty-description {
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+      gap: 10px;
+      color: var(--text-secondary);
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--border);
+      border-top: 2px solid var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media screen and (max-width: 480px) {
+      .main-content {
+        padding: 12px;
+      }
+    }
+#addEntryBtn {
+  width: 100%;
+  display: block; /* Ensure it behaves like a block element */
+  margin-bottom: 16px;
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>🤝 Lend Tracker</h1>
+    </header>
+
+    <main class="main-content">
+      
+      <!-- + Add Lend Entry Button -->
+      <button id="addEntryBtn" class="btn btn-primary">+ Add Lend Entry</button>
+
+      <!-- Add Form (Initially Hidden) -->
+      <div id="formContainer" class="form-container" style="display: none;">
+        <form id="lendForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Person Name</label>
+              <input type="text" id="name" class="form-input" placeholder="Enter name" required />
+            </div>
+
+            <div class="form-group">
+              <label for="amount">Amount (₹)</label>
+              <input type="number" id="amount" class="form-input" placeholder="Amount" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="category">Category</label>
+              <input type="text" id="category" class="form-input" placeholder="e.g., Food" required />
+            </div>
+
+            <div class="form-group">
+              <label>Payment Method</label>
+              <div class="payment-methods">
+                <button type="button" class="payment-method" data-mode="Cash">💵</button>
+                <button type="button" class="payment-method" data-mode="UPI">📱</button>
+                <button type="button" class="payment-method" data-mode="Card">💳</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="description">Description (Optional)</label>
+            <input type="text" id="description" class="form-input" placeholder="Add details..." />
+          </div>
+
+          <input type="hidden" id="paymentMode" required>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">✅ Save</button>
+            <button type="button" id="cancelFormBtn" class="btn btn-secondary">❌ Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Recent Entries -->
+      <div class="dashboard-section">
+        <!-- Filters -->
+        <div class="filters">
+          <button id="filter-all" class="filter-btn active">All</button>
+          <button id="filter-pending" class="filter-btn">Pending</button>
+          <button id="filter-received" class="filter-btn">Received</button>
+        </div>
+
+        <!-- Entries List -->
+        <div class="entries-list">
+          <div id="entriesList">
+            <div class="loading">
+              <div class="spinner"></div>
+              <span>Loading entries...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAk6-ojS17WvRyCn-4mqQgOxRtk6aa1hAc",
+      authDomain: "nutritiontracker-56702.firebaseapp.com",
+      projectId: "nutritiontracker-56702",
+      storageBucket: "nutritiontracker-56702.appspot.com",
+      messagingSenderId: "670664900798",
+      appId: "1:670664900798:web:f4e0104661ddd985b81eef",
+      measurementId: "G-GLNQXTX2SY"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // DOM Elements
+    const formContainer = document.getElementById("formContainer");
+    const form = document.getElementById("lendForm");
+    const cancelFormBtn = document.getElementById("cancelFormBtn");
+    const addEntryBtn = document.getElementById("addEntryBtn");
+    const paymentMethods = document.querySelectorAll(".payment-method");
+    const paymentModeInput = document.getElementById("paymentMode");
+    const entriesList = document.getElementById("entriesList");
+    const filterBtns = document.querySelectorAll(".filter-btn");
+
+    let currentFilter = "all";
+    let allEntries = [];
+
+    // Event Listeners
+    cancelFormBtn.addEventListener("click", resetForm);
+    form.addEventListener("submit", handleSubmit);
+    addEntryBtn.addEventListener("click", () => {
+      formContainer.style.display = "block";
+      addEntryBtn.style.display = "none";
+    });
+
+    paymentMethods.forEach(method => {
+      method.addEventListener("click", () => selectPaymentMethod(method));
+    });
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const filter = btn.id.replace("filter-", "");
+        setFilter(filter, btn);
+      });
+    });
+
+    // Functions
+    function resetForm() {
+      form.reset();
+      paymentMethods.forEach(method => method.classList.remove("active"));
+      paymentModeInput.value = "";
+
+      // Hide form and show Add Entry button
+      formContainer.style.display = "none";
+      addEntryBtn.style.display = "block";
+    }
+
+    function selectPaymentMethod(selectedMethod) {
+      paymentMethods.forEach(method => method.classList.remove("active"));
+      selectedMethod.classList.add("active");
+      paymentModeInput.value = selectedMethod.getAttribute("data-mode");
+    }
+
+    function setFilter(filter, btn) {
+      currentFilter = filter;
+      filterBtns.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderEntries();
+    }
+
+    async function getNextDocumentId() {
+      const today = new Date();
+      const formattedDate = `${today.getDate().toString().padStart(2, '0')}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getFullYear()}`;
+      
+      try {
+        // Get ALL documents and filter for today's date in JavaScript
+        // This avoids Firestore query limitations
+        const snapshot = await db.collection("lend").get();
+
+        let maxNumber = 0;
+        
+        snapshot.forEach(doc => {
+          const docId = doc.id;
+          // Check if this document belongs to today's date
+          if (docId.startsWith(`${formattedDate}_lend_`)) {
+            const match = docId.match(/_lend_(\d+)$/);
+            if (match) {
+              const num = parseInt(match[1]);
+              if (num > maxNumber) {
+                maxNumber = num;
+              }
+            }
+          }
+        });
+
+        const nextNumber = maxNumber + 1;
+        console.log(`Next document ID will be: ${formattedDate}_lend_${nextNumber}`);
+        return `${formattedDate}_lend_${nextNumber}`;
+      } catch (error) {
+        console.error("Error getting next document ID:", error);
+        throw error; // Don't create document if we can't get proper ID
+      }
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const amount = parseFloat(document.getElementById("amount").value);
+      const category = document.getElementById("category").value.trim();
+      const description = document.getElementById("description").value.trim();
+      const paymentMode = paymentModeInput.value;
+
+      if (!name || !amount || !category || !paymentMode) return;
+
+      const saveBtn = form.querySelector(".btn-primary");
+      const originalText = saveBtn.innerHTML;
+      saveBtn.innerHTML = '<div class="spinner"></div> Saving...';
+      saveBtn.disabled = true;
+
+      try {
+        // Get the next document ID
+        const documentId = await getNextDocumentId();
+        console.log(`Saving with document ID: ${documentId}`);
+        
+        await db.collection("lend").doc(documentId).set({
+          name,
+          amount,
+          category,
+          description,
+          paymentMode,
+          status: "pending",
+          createdAt: firebase.firestore.Timestamp.now()
+        });
+
+        console.log("Entry saved successfully!");
+        resetForm();
+        loadEntries();
+      } catch (error) {
+        console.error("Error adding entry:", error);
+        alert("Failed to save entry. Please try again.");
+      } finally {
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+      }
+    }
+
+    function formatTimestamp(timestamp) {
+      if (!timestamp?.seconds) return "N/A";
+      return new Date(timestamp.seconds * 1000).toLocaleString("en-IN", {
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function createEntryItem(id, data) {
+      const item = document.createElement("div");
+      item.className = `entry-item ${data.status === "received" ? "received" : ""}`;
+
+      item.innerHTML = `
+        <div class="entry-left">
+          <div class="entry-header">
+            <div class="entry-name">${data.name}</div>
+            <div class="entry-amount">₹${data.amount.toLocaleString("en-IN")}</div>
+          </div>
+          
+          <div class="entry-details">
+            <div class="entry-detail">
+              <span>📁</span>
+              <span>${data.category}</span>
+            </div>
+            <div class="entry-detail">
+              <span>💳</span>
+              <span>${data.paymentMode}</span>
+            </div>
+          </div>
+
+          ${data.description ? `<div class="entry-description">${data.description}</div>` : ""}
+
+          <div class="entry-time">
+            ${formatTimestamp(data.createdAt)}${data.status === "received" ? ` • ✅ ${formatTimestamp(data.receivedAt)}` : ""}
+          </div>
+        </div>
+
+        <button class="entry-action" ${data.status === "received" ? "disabled" : ""}>
+          ${data.status === "pending" ? "Received" : "✅"}
+        </button>
+      `;
+
+      const actionBtn = item.querySelector(".entry-action");
+      if (data.status === "pending") {
+        actionBtn.addEventListener("click", () => markAsReceived(id, actionBtn));
+      }
+
+      return item;
+    }
+
+    async function markAsReceived(id, button) {
+      const originalText = button.textContent;
+      button.innerHTML = '⏳';
+      button.disabled = true;
+
+      try {
+        await db.collection("lend").doc(id).update({
+          status: "received",
+          receivedAt: firebase.firestore.Timestamp.now()
+        });
+        loadEntries();
+      } catch (error) {
+        console.error("Error updating entry:", error);
+        button.textContent = originalText;
+        button.disabled = false;
+      }
+    }
+
+    function renderEntries() {
+      entriesList.innerHTML = "";
+
+      const filteredEntries = allEntries.filter(entry => {
+        if (currentFilter === "all") return true;
+        return entry.data.status === currentFilter;
+      });
+
+      if (filteredEntries.length === 0) {
+        entriesList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">${currentFilter === "all" ? "💸" : "🔍"}</div>
+            <div class="empty-title">${currentFilter === "all" ? "No entries yet" : `No ${currentFilter} entries`}</div>
+            <div class="empty-description">${currentFilter === "all" ? "Start by adding your first lend entry!" : `Try switching to a different filter.`}</div>
+          </div>
+        `;
+        return;
+      }
+
+      filteredEntries.forEach(entry => {
+        const item = createEntryItem(entry.id, entry.data);
+        entriesList.appendChild(item);
+      });
+    }
+
+    async function loadEntries() {
+      try {
+        const snapshot = await db.collection("lend").orderBy("createdAt", "desc").get();
+        
+        allEntries = [];
+        snapshot.forEach(doc => {
+          allEntries.push({ id: doc.id, data: doc.data() });
+        });
+
+        renderEntries();
+      } catch (error) {
+        console.error("Error loading entries:", error);
+        entriesList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">⚠️</div>
+            <div class="empty-title">Error loading entries</div>
+            <div class="empty-description">Please check your connection and try again.</div>
+          </div>
+        `;
+      }
+    }
+
+    // Initialize
+    loadEntries();
+  </script>
+</body>
+</html>
