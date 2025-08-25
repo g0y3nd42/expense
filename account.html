@@ -17,6 +17,7 @@
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       padding: 20px;
+      padding-top: 70px;
     }
     
     .container {
@@ -439,10 +440,268 @@
     .transactions-section::-webkit-scrollbar-thumb:hover {
       background: #a0aec0;
     }
+
+    .mobile-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .nav-brand-icon {
+            margin-right: 0.5rem;
+            font-size: 1.4rem;
+        }
+        
+        .nav-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        
+        .nav-toggle:active {
+            background: #f1f5f9;
+        }
+        
+        .nav-menu {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            display: none;
+            flex-direction: column;
+            z-index: 999;
+        }
+        
+        .nav-menu.active {
+            display: flex;
+        }
+        
+        .nav-item {
+            list-style: none;
+            margin-bottom: 0.5rem;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: #64748b;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .nav-link:active {
+            background: #f1f5f9;
+            color: #10b981;
+        }
+        
+        .nav-link.active {
+            background: #ecfdf5;
+            color: #10b981;
+        }
+        
+        .nav-icon {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Content styles to match your design */
+        .btn-primary1 {
+            width: 100%;
+            padding: 0.75rem;
+            background: #10b981;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card {
+            background: #f1f5f9;
+            border-radius: 6px;
+            padding: 0.5rem;
+            text-align: center;
+            border-left: 2px solid #64748b;
+        }
+        
+        .stat-card.account-balance {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-left: none;
+            font-size: 1rem;
+            padding: 1rem;
+        }
+        
+        .stat-title {
+            font-size: 0.6rem;
+            color: #64748b;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-card.account-balance .stat-title {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .stat-amount {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .stat-card.account-balance .stat-amount {
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .item {
+            background: #fff;
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.8rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
+        }
+        
+        .item-category {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.85rem;
+        }
+        
+        .item-payment {
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+        
+        .item-description {
+            color: #64748b;
+            font-size: 0.75rem;
+            margin-bottom: 0.4rem;
+        }
+        
+        .item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .item-date {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+        
+        .item-amount {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.9rem;
+        }
+        
+        .nav-btn {
+            width: 100%;
+            padding: 0.7rem;
+            background: #f59e0b;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            margin-bottom: 0.5rem;
+        }
+        
+        .nav-btn.account {
+            background: #667eea;
+        }
     
   </style>
 </head>
 <body>
+
+          <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+        <div class="nav-brand">
+            <span class="nav-brand-icon">🪪</span>
+            <span>Daily Expenses</span>
+        </div>
+        <button class="nav-toggle" id="navToggle">☰</button>
+        <ul class="nav-menu" id="navMenu">
+            <li class="nav-item">
+                <a href="index.html" class="nav-link active">
+                    <span class="nav-icon">💰</span>
+                    <span>Expenses</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="lend.html" class="nav-link">
+                    <span class="nav-icon">🤝</span>
+                    <span>Lend Records</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="account.html" class="nav-link">
+                    <span class="nav-icon">🪪</span>
+                    <span>Account Details</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="borrow.html" class="nav-link">
+                    <span class="nav-icon">🏦</span>
+                    <span>Borrow Details</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
   <div class="container">
     <header>
       <div class="header-content">
@@ -514,6 +773,36 @@
   <!-- Load Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+        <script>
+        // Navigation toggle functionality
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                navMenu.classList.remove('active');
+            }
+        });
+        
+        // Handle navigation item clicks
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                // Remove active class from all links
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                
+                // Add active class to clicked link
+                e.currentTarget.classList.add('active');
+                
+                // Close the menu
+                navMenu.classList.remove('active');
+            });
+        });
+    </script>
 
   <script>
     // Initialize Firebase
