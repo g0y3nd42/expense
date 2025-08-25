@@ -643,10 +643,261 @@
                 font-size: 0.7rem;
             }
         }
+
+
+        /*-------------MOBILE NAVIGATION---------------------*/
+        .nav-toggle {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+            touch-action: manipulation;
+        }
+
+        .nav-toggle:active {
+            background: #059669;
+            transform: scale(0.95);
+        }
+
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(2px);
+        }
+
+        .nav-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .nav-sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: white;
+            z-index: 999;
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.15);
+            transition: left 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-sidebar.active {
+            left: 0;
+        }
+
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .nav-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .nav-close {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #64748b;
+            padding: 0;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            touch-action: manipulation;
+        }
+
+        .nav-close:active {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            text-decoration: none;
+            color: #64748b;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 1rem;
+            min-height: 56px;
+            touch-action: manipulation;
+        }
+
+        .nav-link:active {
+            background: #f1f5f9;
+            color: #10b981;
+            transform: translateY(1px);
+        }
+
+        .nav-link.active {
+            background: #ecfdf5;
+            color: #10b981;
+        }
+
+        .nav-icon {
+            margin-right: 1rem;
+            font-size: 1.3rem;
+            width: 24px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* Swipe to close functionality */
+        .nav-sidebar {
+            touch-action: pan-y;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .nav-toggle {
+                top: 0.8rem;
+                left: 0.8rem;
+                width: 46px;
+                height: 46px;
+                font-size: 1.3rem;
+            }
+
+            .nav-sidebar {
+                width: 85%;
+                max-width: 300px;
+                left: -100%;
+                padding: 1.2rem 0.8rem;
+            }
+
+            .nav-title {
+                font-size: 1.1rem;
+            }
+
+            .nav-link {
+                padding: 0.9rem;
+                font-size: 0.95rem;
+                min-height: 52px;
+            }
+
+            .nav-icon {
+                font-size: 1.2rem;
+                margin-right: 0.9rem;
+            }
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .nav-sidebar {
+                border-right: 2px solid #000;
+            }
+
+            .nav-link.active {
+                border: 1px solid #10b981;
+            }
+        }
+
+        /* Reduce motion for accessibility */
+        @media (prefers-reduced-motion: reduce) {
+
+            .nav-toggle,
+            .nav-sidebar,
+            .nav-overlay,
+            .nav-link {
+                transition: none;
+            }
+        }
     </style>
 </head>
 
 <body>
+
+    <!-- Navigation Toggle Button -->
+    <button class="nav-toggle" id="navToggle">☰</button>
+
+    <!-- Navigation Overlay -->
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <!-- Navigation Sidebar -->
+    <div class="nav-sidebar" id="navSidebar">
+        <div class="nav-header">
+            <h3 class="nav-title">Navigation</h3>
+            <button class="nav-close" id="navClose">×</button>
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="index.html" class="nav-link active">
+                    <span class="nav-icon">💰</span>
+                    <span>Expenses</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="lend.html" class="nav-link">
+                    <span class="nav-icon">📝</span>
+                    <span>Lend Records</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="account.html" class="nav-link">
+                    <span class="nav-icon">🏦</span>
+                    <span>Account Tracker</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reports.html" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    <span>Reports</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+
     <!-- Add Expense Section -->
     <div class="container">
         <h1>💰 Add Expense</h1>
@@ -782,7 +1033,7 @@
                 <textarea id="splitDescription" placeholder="Additional notes (optional)" rows="2"></textarea>
                 <input type="hidden" id="originalExpenseId" />
                 <input type="hidden" id="maxSplitAmount" />
-                <input type="hidden" id="status" name="status" value="pending" /> 
+                <input type="hidden" id="status" name="status" value="pending" />
                 <button type="submit" class="btn-primary">💸 Create Split</button>
             </form>
         </div>
@@ -793,6 +1044,33 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
     <script>
+        // Navigation functionality
+        const navToggle = document.getElementById('navToggle');
+        const navOverlay = document.getElementById('navOverlay');
+        const navSidebar = document.getElementById('navSidebar');
+        const navClose = document.getElementById('navClose');
+
+        function toggleNav() {
+            navSidebar.classList.toggle('active');
+            navOverlay.classList.toggle('active');
+        }
+
+        navToggle.addEventListener('click', toggleNav);
+        navOverlay.addEventListener('click', toggleNav);
+        navClose.addEventListener('click', toggleNav);
+
+        // Highlight current page in navigation
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        document.querySelectorAll('.nav-link').forEach(link => {
+            const linkPage = link.getAttribute('href');
+            if (linkPage === currentPage) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+
+
         // Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyAk6-ojS17WvRyCn-4mqQgOxRtk6aa1hAc",
@@ -902,14 +1180,14 @@
         async function generateLendId(dateId) {
             try {
                 console.log('Generating lend ID for date:', dateId);
-                
+
                 // Get ALL lend documents that start with the dateId pattern
                 const allLendDocs = await db.collection('lend').get();
-                
+
                 // Filter documents that match our date pattern and extract their numbers
                 const existingNumbers = [];
                 const datePattern = `${dateId}_lend_`;
-                
+
                 allLendDocs.forEach(doc => {
                     const docId = doc.id;
                     if (docId.startsWith(datePattern)) {
@@ -921,18 +1199,18 @@
                         }
                     }
                 });
-                
+
                 console.log('Existing lend numbers for', dateId, ':', existingNumbers);
-                
+
                 // Find the next available number
                 let nextNumber = 1;
                 while (existingNumbers.includes(nextNumber)) {
                     nextNumber++;
                 }
-                
+
                 const newLendId = `${dateId}_lend_${nextNumber}`;
                 console.log('Generated new lend ID:', newLendId);
-                
+
                 return newLendId;
             } catch (error) {
                 console.error('Error generating lend ID:', error);
@@ -945,14 +1223,14 @@
         async function getNextAccountTransactionId() {
             try {
                 const counterRef = db.collection('counters').doc('transactionCounter');
-                
+
                 // First, try to get existing counter
                 const counterDoc = await counterRef.get();
-                
+
                 if (counterDoc.exists) {
                     const currentCount = counterDoc.data().count;
                     const newCount = currentCount + 1;
-                    
+
                     // Update counter
                     await counterRef.update({ count: newCount });
                     console.log('Generated account transaction ID:', `tnx_${newCount}`);
@@ -965,7 +1243,7 @@
                 }
             } catch (error) {
                 console.error('Error in getNextAccountTransactionId:', error);
-                
+
                 // Simple fallback - just get count of existing documents + 1
                 try {
                     const snapshot = await db.collection('account').get();
@@ -981,16 +1259,50 @@
             }
         }
 
+        // UPDATED: Function to load current account balance from last transaction
+        async function loadCurrentAccountBalance() {
+            try {
+                console.log('Loading current account balance...');
+
+                // Get the latest account transaction to fetch current balance
+                const snapshot = await db.collection("account").orderBy("timestamp", "desc").limit(1).get();
+
+                if (!snapshot.empty) {
+                    const latestTransaction = snapshot.docs[0].data();
+                    currentAccountBalance = latestTransaction.update_bal || 0;
+                    console.log('Loaded current account balance from latest transaction:', currentAccountBalance);
+                } else {
+                    currentAccountBalance = 0;
+                    console.log('No account transactions found, starting with balance: 0');
+                }
+
+                return currentAccountBalance;
+            } catch (error) {
+                console.error('Error loading current account balance:', error);
+                currentAccountBalance = 0;
+                return 0;
+            }
+        }
+
         async function createAccountTransaction(expenseData, expenseId) {
             try {
                 console.log('Creating account transaction for expense:', expenseId, expenseData);
-                
+
+                // CRITICAL: First fetch the current account balance from latest transaction
+                const latestBalance = await loadCurrentAccountBalance();
+
                 // Get the incremental transaction ID
                 const transactionId = await getNextAccountTransactionId();
-                
-                // Calculate new balance (debit for expense)
-                const newBalance = currentAccountBalance - expenseData.amount;
-                
+
+                // Calculate new balance (debit for expense) - use the fetched balance
+                const newBalance = latestBalance - expenseData.amount;
+
+                console.log('Account transaction calculation:', {
+                    currentBalance: latestBalance,
+                    expenseAmount: expenseData.amount,
+                    newBalance: newBalance
+                });
+
                 // Create account transaction
                 const accountTransaction = {
                     amount: expenseData.amount,
@@ -1002,16 +1314,16 @@
                     linked_expense_id: expenseId,
                     auto_created: true
                 };
-                
+
                 // Add transaction to account collection
                 await db.collection("account").doc(transactionId).set(accountTransaction);
-                
+
                 console.log('Account transaction created successfully:', transactionId);
-                
-                // Update current balance
+
+                // Update current balance in memory
                 currentAccountBalance = newBalance;
                 updateAccountBalanceDisplay();
-                
+
                 return transactionId;
             } catch (error) {
                 console.error('Error creating account transaction:', error);
@@ -1021,16 +1333,16 @@
 
         async function loadAccountBalance() {
             try {
-                // Get all account transactions and calculate current balance
+                // Get the latest account transaction to show current balance
                 const snapshot = await db.collection("account").orderBy("timestamp", "desc").limit(1).get();
-                
+
                 if (!snapshot.empty) {
                     const latestTransaction = snapshot.docs[0].data();
                     currentAccountBalance = latestTransaction.update_bal || 0;
                 } else {
                     currentAccountBalance = 0;
                 }
-                
+
                 updateAccountBalanceDisplay();
             } catch (error) {
                 console.error('Error loading account balance:', error);
@@ -1080,7 +1392,7 @@
             if (inputDate) {
                 selectedDate = inputDateToDateId(inputDate);
                 const displayDate = dateIdToDisplayFormat(selectedDate);
-                
+
                 // Check if selected date is today
                 const todayDateId = getTodayDateId();
                 if (selectedDate === todayDateId) {
@@ -1088,7 +1400,7 @@
                 } else {
                     expenseListTitle.textContent = `${displayDate} Expenses`;
                 }
-                
+
                 loadExpenses();
             }
         });
@@ -1255,7 +1567,7 @@
                     const data = doc.data();
                     const docId = doc.id;
                     const status = data.status?.toLowerCase()?.trim();
-                    
+
                     // Check if this lend record belongs to current month/year
                     // Extract date from document ID (format: DD-MM-YYYY_lend_N)
                     const dateMatch = docId.match(/^(\d{2})-(\d{2})-(\d{4})_/);
@@ -1263,7 +1575,7 @@
                         const [, day, docMonth, docYear] = dateMatch;
                         const lendMonth = parseInt(docMonth, 10);
                         const lendYear = parseInt(docYear, 10);
-                        
+
                         // Only count if it's from current month/year and status is pending
                         if (lendMonth === month && lendYear === year && status === 'pending') {
                             monthlyLend += data.amount || 0;
@@ -1276,7 +1588,7 @@
                             const [, day, docMonth, docYear] = dateIdMatch;
                             const lendMonth = parseInt(docMonth, 10);
                             const lendYear = parseInt(docYear, 10);
-                            
+
                             if (lendMonth === month && lendYear === year && status === 'pending') {
                                 monthlyLend += data.amount || 0;
                             }
@@ -1348,8 +1660,8 @@
 
                 // Auto-create account transaction for UPI payments
                 let accountTransactionId = null;
-                const isUpiPayment = selectedPayment.toLowerCase() === 'upi' || 
-                                   (selectedPayment.toLowerCase().includes('upi'));
+                const isUpiPayment = selectedPayment.toLowerCase() === 'upi' ||
+                    (selectedPayment.toLowerCase().includes('upi'));
 
                 if (isUpiPayment) {
                     try {

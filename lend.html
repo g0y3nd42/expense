@@ -767,7 +767,6 @@
     let currentAccountBalance = 0;
 
     // Load current account balance
-    // Load current account balance
     async function loadAccountBalance() {
       try {
         const snapshot = await db.collection("account").orderBy("timestamp", "desc").limit(1).get();
@@ -1003,6 +1002,9 @@
       try {
         console.log('Creating account transaction for lend:', lendId, lendData);
         
+        // Get the latest account balance before creating transaction
+        await loadAccountBalance();
+        
         const transactionId = await getNextAccountTransactionId();
         
         // Calculate new balance (debit for lending money)
@@ -1035,6 +1037,9 @@
     async function createAccountTransactionForReceipt(lendData, lendId, paymentMethod, receiptAmount) {
       try {
         console.log('Creating account transaction for lend receipt:', lendId, lendData);
+        
+        // Get the latest account balance before creating transaction
+        await loadAccountBalance();
         
         const transactionId = await getNextAccountTransactionId();
         

@@ -394,6 +394,7 @@
     .time-label {
       font-weight: 500;
       min-width: 45px;
+      font-size: 0.7rem;
     }
 
     .paid-indicator {
@@ -762,7 +763,6 @@
     let currentAccountBalance = 0;
 
     // Load current account balance
-    // Load current account balance
     async function loadAccountBalance() {
       try {
         const snapshot = await db.collection("account").orderBy("timestamp", "desc").limit(1).get();
@@ -969,7 +969,7 @@
         
         await db.collection("borrow").doc(docId).set(borrowData);
         
-        // Create account transaction for UPI borrows (debit account balance)
+        // Create account transaction for UPI borrows (credit account balance)
         if (selectedBorrowMethod === "UPI") {
           try {
             await createAccountTransactionForBorrow(borrowData, docId, borrowMethodText);
@@ -1132,16 +1132,19 @@
       try {
         console.log('Creating account transaction for borrow:', borrowId, borrowData);
         
+        // Get the latest account balance before creating transaction
+        await loadAccountBalance();
+        
         // Get the incremental transaction ID
         const transactionId = await getNextAccountTransactionId();
         
-        // Calculate new balance (debit for borrowing money via UPI)
-        const newBalance = currentAccountBalance - borrowData.amount;
+        // Calculate new balance (credit for borrowing money via UPI)
+        const newBalance = currentAccountBalance + borrowData.amount;
         
         // Create account transaction
         const accountTransaction = {
           amount: borrowData.amount,
-          type: 'debit',
+          type: 'credit',
           method: borrowMethod,
           description: `Borrow: ${borrowData.name} - ${borrowData.description || 'Money borrowed'}`,
           timestamp: firebase.firestore.Timestamp.now(),
@@ -1169,16 +1172,19 @@
       try {
         console.log('Creating account transaction for borrow payment:', borrowId, borrowData);
         
+        // Get the latest account balance before creating transaction
+        await loadAccountBalance();
+        
         // Get the incremental transaction ID
         const transactionId = await getNextAccountTransactionId();
         
-        // Calculate new balance (credit for receiving borrow payment)
-        const newBalance = currentAccountBalance + paymentAmount;
+        // Calculate new balance (Debit for receiving borrow payment)
+        const newBalance = currentAccountBalance - paymentAmount;
         
         // Create account transaction
         const accountTransaction = {
           amount: paymentAmount,
-          type: 'credit',
+          type: 'debit',
           method: paymentMethod,
           description: `Borrow Payment: ${borrowData.name} - ${borrowData.description || 'Loan repayment'}`,
           timestamp: firebase.firestore.Timestamp.now(),
