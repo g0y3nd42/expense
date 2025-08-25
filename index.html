@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -24,7 +25,6 @@
             align-items: center;
             padding: 1rem;
             font-size: 14px;
-            padding-top: 70px;
         }
 
         .container {
@@ -645,270 +645,16 @@
             }
         }
 
-                /* Mobile Navigation */
-        .mobile-nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-            font-size: 1.2rem;
-        }
-        
-        .nav-brand-icon {
-            margin-right: 0.5rem;
-            font-size: 1.4rem;
-        }
-        
-        .nav-toggle {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.25rem;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
-        
-        .nav-toggle:active {
-            background: #f1f5f9;
-        }
-        
-        .nav-menu {
-            position: fixed;
-            top: 60px;
-            left: 0;
-            width: 100%;
-            background: white;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 1rem;
-            display: none;
-            flex-direction: column;
-            z-index: 999;
-        }
-        
-        .nav-menu.active {
-            display: flex;
-        }
-        
-        .nav-item {
-            list-style: none;
-            margin-bottom: 0.5rem;
-        }
-        
-        .nav-link {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            text-decoration: none;
-            color: #64748b;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-            font-weight: 500;
-        }
-        
-        .nav-link:active {
-            background: #f1f5f9;
-            color: #10b981;
-        }
-        
-        .nav-link.active {
-            background: #ecfdf5;
-            color: #10b981;
-        }
-        
-        .nav-icon {
-            margin-right: 0.75rem;
-            font-size: 1.1rem;
-            width: 20px;
-            text-align: center;
-        }
-        
-        /* Content styles to match your design */
-        .btn-primary1 {
-            width: 100%;
-            padding: 0.75rem;
-            background: #10b981;
-            border: none;
-            border-radius: 6px;
-            color: white;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            margin-bottom: 0.5rem;
-            transition: all 0.2s ease;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .stat-card {
-            background: #f1f5f9;
-            border-radius: 6px;
-            padding: 0.5rem;
-            text-align: center;
-            border-left: 2px solid #64748b;
-        }
-        
-        .stat-card.account-balance {
-            grid-column: 1 / -1;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-left: none;
-            font-size: 1rem;
-            padding: 1rem;
-        }
-        
-        .stat-title {
-            font-size: 0.6rem;
-            color: #64748b;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.25rem;
-        }
-        
-        .stat-card.account-balance .stat-title {
-            color: rgba(255, 255, 255, 0.9);
-        }
-        
-        .stat-amount {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #1e293b;
-        }
-        
-        .stat-card.account-balance .stat-amount {
-            color: white;
-            font-size: 1.2rem;
-        }
-        
-        .item {
-            background: #fff;
-            border-radius: 8px;
-            padding: 0.8rem;
-            margin-bottom: 0.8rem;
-            font-size: 0.8rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e2e8f0;
-        }
-        
-        .item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.4rem;
-        }
-        
-        .item-category {
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 0.85rem;
-        }
-        
-        .item-payment {
-            color: #64748b;
-            font-size: 0.75rem;
-        }
-        
-        .item-description {
-            color: #64748b;
-            font-size: 0.75rem;
-            margin-bottom: 0.4rem;
-        }
-        
-        .item-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .item-date {
-            font-size: 0.7rem;
-            color: #94a3b8;
-        }
-        
-        .item-amount {
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 0.9rem;
-        }
-        
-        .nav-btn {
-            width: 100%;
-            padding: 0.7rem;
-            background: #f59e0b;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: white;
-            cursor: pointer;
-            transition: background 0.2s ease;
-            margin-bottom: 0.5rem;
-        }
-        
-        .nav-btn.account {
-            background: #667eea;
-        }
+
+        /*-------------NAV---------------------*/
+
         
     </style>
 </head>
 
 <body>
 
-        <!-- Mobile Navigation -->
-    <nav class="mobile-nav">
-        <div class="nav-brand">
-            <span class="nav-brand-icon">💰</span>
-            <span>Daily Expenses</span>
-        </div>
-        <button class="nav-toggle" id="navToggle">☰</button>
-        <ul class="nav-menu" id="navMenu">
-            <li class="nav-item">
-                <a href="index.html" class="nav-link active">
-                    <span class="nav-icon">💰</span>
-                    <span>Expenses</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="lend.html" class="nav-link">
-                    <span class="nav-icon">🤝</span>
-                    <span>Lend Records</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="account.html" class="nav-link">
-                    <span class="nav-icon">🏦</span>
-                    <span>Account Details</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="borrow.html" class="nav-link">
-                    <span class="nav-icon">🏦</span>
-                    <span>Borrow Details</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-
-
+    
     <!-- Add Expense Section -->
     <div class="container">
         <h1>💰 Add Expense</h1>
@@ -1042,7 +788,7 @@
                 <textarea id="splitDescription" placeholder="Additional notes (optional)" rows="2"></textarea>
                 <input type="hidden" id="originalExpenseId" />
                 <input type="hidden" id="maxSplitAmount" />
-                <input type="hidden" id="status" name="status" value="pending" />
+                <input type="hidden" id="status" name="status" value="pending" /> 
                 <button type="submit" class="btn-primary">💸 Create Split</button>
             </form>
         </div>
@@ -1051,39 +797,8 @@
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-      <script>
-        // Navigation toggle functionality
-        const navToggle = document.getElementById('navToggle');
-        const navMenu = document.getElementById('navMenu');
-        
-        navToggle.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-        });
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
-                navMenu.classList.remove('active');
-            }
-        });
-        
-        // Handle navigation item clicks
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                // Remove active class from all links
-                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-                
-                // Add active class to clicked link
-                e.currentTarget.classList.add('active');
-                
-                // Close the menu
-                navMenu.classList.remove('active');
-            });
-        });
-    </script>
+
     <script>
-
-
         // Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyAk6-ojS17WvRyCn-4mqQgOxRtk6aa1hAc",
@@ -1193,14 +908,14 @@
         async function generateLendId(dateId) {
             try {
                 console.log('Generating lend ID for date:', dateId);
-
+                
                 // Get ALL lend documents that start with the dateId pattern
                 const allLendDocs = await db.collection('lend').get();
-
+                
                 // Filter documents that match our date pattern and extract their numbers
                 const existingNumbers = [];
                 const datePattern = `${dateId}_lend_`;
-
+                
                 allLendDocs.forEach(doc => {
                     const docId = doc.id;
                     if (docId.startsWith(datePattern)) {
@@ -1212,18 +927,18 @@
                         }
                     }
                 });
-
+                
                 console.log('Existing lend numbers for', dateId, ':', existingNumbers);
-
+                
                 // Find the next available number
                 let nextNumber = 1;
                 while (existingNumbers.includes(nextNumber)) {
                     nextNumber++;
                 }
-
+                
                 const newLendId = `${dateId}_lend_${nextNumber}`;
                 console.log('Generated new lend ID:', newLendId);
-
+                
                 return newLendId;
             } catch (error) {
                 console.error('Error generating lend ID:', error);
@@ -1236,14 +951,14 @@
         async function getNextAccountTransactionId() {
             try {
                 const counterRef = db.collection('counters').doc('transactionCounter');
-
+                
                 // First, try to get existing counter
                 const counterDoc = await counterRef.get();
-
+                
                 if (counterDoc.exists) {
                     const currentCount = counterDoc.data().count;
                     const newCount = currentCount + 1;
-
+                    
                     // Update counter
                     await counterRef.update({ count: newCount });
                     console.log('Generated account transaction ID:', `tnx_${newCount}`);
@@ -1256,7 +971,7 @@
                 }
             } catch (error) {
                 console.error('Error in getNextAccountTransactionId:', error);
-
+                
                 // Simple fallback - just get count of existing documents + 1
                 try {
                     const snapshot = await db.collection('account').get();
@@ -1276,10 +991,10 @@
         async function loadCurrentAccountBalance() {
             try {
                 console.log('Loading current account balance...');
-
+                
                 // Get the latest account transaction to fetch current balance
                 const snapshot = await db.collection("account").orderBy("timestamp", "desc").limit(1).get();
-
+                
                 if (!snapshot.empty) {
                     const latestTransaction = snapshot.docs[0].data();
                     currentAccountBalance = latestTransaction.update_bal || 0;
@@ -1288,7 +1003,7 @@
                     currentAccountBalance = 0;
                     console.log('No account transactions found, starting with balance: 0');
                 }
-
+                
                 return currentAccountBalance;
             } catch (error) {
                 console.error('Error loading current account balance:', error);
@@ -1300,22 +1015,22 @@
         async function createAccountTransaction(expenseData, expenseId) {
             try {
                 console.log('Creating account transaction for expense:', expenseId, expenseData);
-
+                
                 // CRITICAL: First fetch the current account balance from latest transaction
                 const latestBalance = await loadCurrentAccountBalance();
-
+                
                 // Get the incremental transaction ID
                 const transactionId = await getNextAccountTransactionId();
-
+                
                 // Calculate new balance (debit for expense) - use the fetched balance
                 const newBalance = latestBalance - expenseData.amount;
-
+                
                 console.log('Account transaction calculation:', {
                     currentBalance: latestBalance,
                     expenseAmount: expenseData.amount,
                     newBalance: newBalance
                 });
-
+                
                 // Create account transaction
                 const accountTransaction = {
                     amount: expenseData.amount,
@@ -1327,16 +1042,16 @@
                     linked_expense_id: expenseId,
                     auto_created: true
                 };
-
+                
                 // Add transaction to account collection
                 await db.collection("account").doc(transactionId).set(accountTransaction);
-
+                
                 console.log('Account transaction created successfully:', transactionId);
-
+                
                 // Update current balance in memory
                 currentAccountBalance = newBalance;
                 updateAccountBalanceDisplay();
-
+                
                 return transactionId;
             } catch (error) {
                 console.error('Error creating account transaction:', error);
@@ -1348,14 +1063,14 @@
             try {
                 // Get the latest account transaction to show current balance
                 const snapshot = await db.collection("account").orderBy("timestamp", "desc").limit(1).get();
-
+                
                 if (!snapshot.empty) {
                     const latestTransaction = snapshot.docs[0].data();
                     currentAccountBalance = latestTransaction.update_bal || 0;
                 } else {
                     currentAccountBalance = 0;
                 }
-
+                
                 updateAccountBalanceDisplay();
             } catch (error) {
                 console.error('Error loading account balance:', error);
@@ -1405,7 +1120,7 @@
             if (inputDate) {
                 selectedDate = inputDateToDateId(inputDate);
                 const displayDate = dateIdToDisplayFormat(selectedDate);
-
+                
                 // Check if selected date is today
                 const todayDateId = getTodayDateId();
                 if (selectedDate === todayDateId) {
@@ -1413,7 +1128,7 @@
                 } else {
                     expenseListTitle.textContent = `${displayDate} Expenses`;
                 }
-
+                
                 loadExpenses();
             }
         });
@@ -1580,7 +1295,7 @@
                     const data = doc.data();
                     const docId = doc.id;
                     const status = data.status?.toLowerCase()?.trim();
-
+                    
                     // Check if this lend record belongs to current month/year
                     // Extract date from document ID (format: DD-MM-YYYY_lend_N)
                     const dateMatch = docId.match(/^(\d{2})-(\d{2})-(\d{4})_/);
@@ -1588,7 +1303,7 @@
                         const [, day, docMonth, docYear] = dateMatch;
                         const lendMonth = parseInt(docMonth, 10);
                         const lendYear = parseInt(docYear, 10);
-
+                        
                         // Only count if it's from current month/year and status is pending
                         if (lendMonth === month && lendYear === year && status === 'pending') {
                             monthlyLend += data.amount || 0;
@@ -1601,7 +1316,7 @@
                             const [, day, docMonth, docYear] = dateIdMatch;
                             const lendMonth = parseInt(docMonth, 10);
                             const lendYear = parseInt(docYear, 10);
-
+                            
                             if (lendMonth === month && lendYear === year && status === 'pending') {
                                 monthlyLend += data.amount || 0;
                             }
@@ -1673,8 +1388,8 @@
 
                 // Auto-create account transaction for UPI payments
                 let accountTransactionId = null;
-                const isUpiPayment = selectedPayment.toLowerCase() === 'upi' ||
-                    (selectedPayment.toLowerCase().includes('upi'));
+                const isUpiPayment = selectedPayment.toLowerCase() === 'upi' || 
+                                   (selectedPayment.toLowerCase().includes('upi'));
 
                 if (isUpiPayment) {
                     try {
