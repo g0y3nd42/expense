@@ -95,6 +95,12 @@
             border-left-color: #ec4899;
         }
 
+        .stat-card.monthly-split {
+            grid-column: 1 / -1;
+            background: #f3e8ff;
+            border-left-color: #8b5cf6;
+        }
+
         .stat-card.account-balance {
             grid-column: 1 / -1;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -113,8 +119,13 @@
             margin-bottom: 0.25rem;
         }
 
-        .stat-card.account-balance .stat-title {
+        .stat-card.account-balance .stat-title,
+        .stat-card.monthly-split .stat-title {
             color: rgba(255, 255, 255, 0.9);
+        }
+
+        .stat-card.monthly-split .stat-title {
+            color: #6b21a8;
         }
 
         .stat-amount {
@@ -126,6 +137,11 @@
         .stat-card.account-balance .stat-amount {
             color: white;
             font-size: 1.2rem;
+        }
+
+        .stat-card.monthly-split .stat-amount {
+            color: #7c2d92;
+            font-size: 0.9rem;
         }
 
         /* Date Filter Section */
@@ -455,6 +471,13 @@
             font-size: 0.9rem;
         }
 
+        .split-info {
+            font-size: 0.7rem;
+            color: #8b5cf6;
+            margin: 0.2rem 0;
+            font-weight: 500;
+        }
+
         .item button {
             padding: 0.3rem 0.6rem;
             font-size: 0.7rem;
@@ -467,6 +490,11 @@
 
         .item button:hover {
             background: #2563eb;
+        }
+
+        .item button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
         }
 
         /* Modal */
@@ -549,7 +577,6 @@
             text-align: center;
             font-size: 0.8rem;
             margin-top: 0.5rem;
-            min-height: 16px;
             font-weight: 500;
             color: #059669;
         }
@@ -601,8 +628,9 @@
                 font-size: 0.8rem;
             }
 
-            /* Monthly lend and account balance still span full width */
+            /* Monthly lend, split and account balance still span full width */
             .stat-card.monthly-lend,
+            .stat-card.monthly-split,
             .stat-card.account-balance {
                 grid-column: 1 / -1;
             }
@@ -914,8 +942,6 @@
 
     <!-- Add Expense Section -->
     <div class="container">
-        <h1>💰 Add Expense</h1>
-
         <button class="btn-primary1" id="toggleFormBtn">
             ➕ Add New Expense
         </button>
@@ -1016,6 +1042,11 @@
                 <button class="nav-btn" id="showLend" hidden>View Lend Records</button>
                 <button class="nav-btn account" id="showAccount" hidden>View Account Tracker</button>
             </div>
+
+            <div class="stat-card monthly-split">
+                <div class="stat-title">Monthly Expense Split</div>
+                <div class="stat-amount" id="monthlySplit">₹0</div>
+            </div>
         </div>
     </div>
 
@@ -1041,6 +1072,7 @@
         <div class="modal-content">
             <span class="close" id="closeModal">&times;</span>
             <h2>💰 Split Expense</h2>
+            <div id="splitAvailableAmount" style="color: #059669; font-weight: 500; margin-bottom: 1rem; text-align: center;"></div>
             <form id="splitForm">
                 <input type="text" id="splitName" placeholder="Split with (Name)" required />
                 <input type="number" id="splitAmount" placeholder="Amount to split" min="0.01" step="0.01" required />
@@ -1192,6 +1224,39 @@
                 month: 'short',
                 year: 'numeric'
             });
+        }
+
+        // Calculate total split amount for an expense
+        async function getTotalSplitAmount(expenseId) {
+            try {
+                const snapshot = await db.collection('lend')
+                    .where('originalExpenseId', '==', expenseId)
+                    .get();
+                
+                let totalSplit = 0;
+                snapshot.forEach(doc => {
+                    totalSplit += doc.data().amount || 0;
+                });
+                
+                return totalSplit;
+            } catch (error) {
+                console.error('Error calculating total split amount:', error);
+                return 0;
+            }
+        }
+
+        // Update expense with split information
+        async function updateExpenseSplitInfo(expenseId, totalSplitAmount) {
+            try {
+                await db.collection('expenses').doc(expenseId).update({
+                    totalSplitAmount: totalSplitAmount,
+                    hasSplits: totalSplitAmount > 0,
+                    lastSplitUpdate: firebase.firestore.Timestamp.now()
+                });
+                console.log('Updated expense split info:', expenseId, totalSplitAmount);
+            } catch (error) {
+                console.error('Error updating expense split info:', error);
+            }
         }
 
         // Generate unique lend ID by checking ALL existing IDs
@@ -1560,11 +1625,13 @@
                 let monthlyUpiCash = 0;
                 let monthlyCcPayLater = 0;
                 let monthlyLend = 0;
+                let monthlySplit = 0;
 
                 expenseSnap.forEach(doc => {
                     const data = doc.data();
                     const amount = data.amount || 0;
                     const mode = data.paymentMode?.toLowerCase();
+                    const splitAmount = data.totalSplitAmount || 0;
 
                     if (data.dateId === today) {
                         todayTotal += amount;
@@ -1578,6 +1645,9 @@
                     } else if (mode === 'paylater & cc' || mode === 'cc & paylater' || mode === 'credit card' || mode === 'card') {
                         monthlyCcPayLater += amount;
                     }
+
+                    // Add to monthly split total
+                    monthlySplit += splitAmount;
                 });
 
                 // Process ALL lend records and filter by current month/year pattern
@@ -1619,6 +1689,7 @@
                 document.getElementById('monthlyUpiCash').textContent = formatCurrency(monthlyUpiCash);
                 document.getElementById('monthlyCcPayLater').textContent = formatCurrency(monthlyCcPayLater);
                 document.getElementById('monthlyLend').textContent = formatCurrency(monthlyLend);
+                document.getElementById('monthlySplit').textContent = formatCurrency(monthlySplit);
 
             } catch (error) {
                 console.error('Error updating dashboard:', error);
@@ -1666,7 +1737,9 @@
                     dateTime,
                     description: desc,
                     createdAt: new Date(),
-                    dateId
+                    dateId,
+                    totalSplitAmount: 0,
+                    hasSplits: false
                 };
 
                 if (selectedSub) {
@@ -1729,7 +1802,7 @@
             const status = document.getElementById('status').value.trim();
 
             if (amount > maxAmount) {
-                showMessage(`❌ Split amount cannot exceed ${formatCurrency(maxAmount)}`, true);
+                showMessage(`❌ Split amount cannot exceed available amount`, true);
                 return;
             }
 
@@ -1762,10 +1835,20 @@
 
                 // CREATE NEW DOCUMENT WITH GENERATED LEND ID
                 await db.collection('lend').doc(lendId).set(splitData);
+
+                // Calculate new total split amount and update expense
+                const newTotalSplitAmount = await getTotalSplitAmount(originalExpenseId);
+                await updateExpenseSplitInfo(originalExpenseId, newTotalSplitAmount);
+
                 showMessage(`✅ Split recorded successfully! ID: ${lendId}`);
                 splitModal.style.display = 'none';
                 splitForm.reset();
 
+                // Reload expenses if viewing the date of the original expense
+                const originalDateId = originalExpenseData.dateId;
+                if (selectedDate === originalDateId) {
+                    loadExpenses();
+                }
                 updateDashboard();
             } catch (error) {
                 console.error('Error saving split:', error);
@@ -1834,12 +1917,18 @@
                         hour12: true
                     });
 
+                    // Calculate remaining amount available for splitting
+                    const totalSplitAmount = d.totalSplitAmount || 0;
+                    const remainingAmount = d.amount - totalSplitAmount;
+                    const splitInfo = totalSplitAmount > 0 ? `Split: ${formatCurrency(totalSplitAmount)} of ${formatCurrency(d.amount)}` : '';
+
                     div.innerHTML = `
                         <div class="item-header">
                           <div class="item-category">${d.category}</div>
                           <div class="item-payment">${d.paymentMode}${d.subMethod ? ` (${d.subMethod})` : ''}</div>
                         </div>
                         <div class="item-description">${d.description || ''}</div>
+                        ${splitInfo ? `<div class="split-info">${splitInfo}</div>` : ''}
                         <div class="item-footer">
                           <div class="item-date">${formattedDate}</div>
                           <div class="item-amount">${formatCurrency(d.amount)}</div>
@@ -1848,9 +1937,17 @@
 
                     const btn = document.createElement('button');
                     btn.textContent = 'Split';
-                    btn.onclick = () => openSplitModal(expense.id, d);
+                    
+                    // Disable split button if no amount remaining
+                    if (remainingAmount <= 0) {
+                        btn.disabled = true;
+                        btn.textContent = 'Fully Split';
+                        btn.style.background = '#9ca3af';
+                    } else {
+                        btn.onclick = () => openSplitModal(expense.id, d);
+                    }
+                    
                     div.querySelector('.item-footer').appendChild(btn);
-
                     expenseList.appendChild(div);
                 });
             } catch (error) {
@@ -1860,17 +1957,34 @@
         }
 
         // Open split modal
-        function openSplitModal(expenseId, expenseData) {
-            document.getElementById('splitName').value = '';
-            document.getElementById('splitAmount').value = '';
-            document.getElementById('splitAmount').max = expenseData.amount;
-            document.getElementById('splitDescription').value = `Split from: ${expenseData.category} - ${expenseData.description || 'No description'}`;
-            document.getElementById('originalExpenseId').value = expenseId;
-            document.getElementById('maxSplitAmount').value = expenseData.amount;
-            document.getElementById('splitAmount').placeholder = `Amount to split (max: ${formatCurrency(expenseData.amount)})`;
+        async function openSplitModal(expenseId, expenseData) {
+            try {
+                // Calculate current total split amount from database
+                const currentTotalSplit = await getTotalSplitAmount(expenseId);
+                const availableAmount = expenseData.amount - currentTotalSplit;
 
-            splitModal.style.display = 'block';
-            document.getElementById('splitName').focus();
+                if (availableAmount <= 0) {
+                    showMessage('❌ This expense has been fully split', true);
+                    return;
+                }
+
+                document.getElementById('splitName').value = '';
+                document.getElementById('splitAmount').value = '';
+                document.getElementById('splitAmount').max = availableAmount;
+                document.getElementById('splitDescription').value = `Split from: ${expenseData.category} - ${expenseData.description || 'No description'}`;
+                document.getElementById('originalExpenseId').value = expenseId;
+                document.getElementById('maxSplitAmount').value = availableAmount;
+                document.getElementById('splitAmount').placeholder = `Amount to split (max: ${formatCurrency(availableAmount)})`;
+                
+                // Update the available amount display
+                document.getElementById('splitAvailableAmount').textContent = `Available to split: ${formatCurrency(availableAmount)} of ${formatCurrency(expenseData.amount)}`;
+
+                splitModal.style.display = 'block';
+                document.getElementById('splitName').focus();
+            } catch (error) {
+                console.error('Error opening split modal:', error);
+                showMessage('❌ Error loading split information', true);
+            }
         }
 
         // Navigation
