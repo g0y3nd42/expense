@@ -403,6 +403,58 @@
       font-weight: 500;
     }
 
+    /* Receipt History Styles */
+    .receipt-history {
+      margin-top: 8px;
+      padding: 8px;
+      background: rgba(245, 158, 11, 0.05);
+      border-radius: 6px;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .receipt-history-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--accent-orange);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .receipt-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(245, 158, 11, 0.1);
+      font-size: 0.7rem;
+    }
+
+    .receipt-item:last-child {
+      border-bottom: none;
+    }
+
+    .receipt-details {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary);
+    }
+
+    .receipt-method-icon {
+      font-size: 0.8rem;
+    }
+
+    .receipt-amount {
+      font-weight: 600;
+      color: var(--accent-green);
+    }
+
+    .receipt-time {
+      color: var(--text-light);
+      font-size: 0.65rem;
+    }
+
     .entry-action {
       padding: 6px 10px;
       background: var(--accent-blue);
@@ -1489,12 +1541,33 @@
 
       // Build time display
       let timeDisplay = `<div class="time-row"><span class="time-label">Created:</span><span>${createdTime}</span></div>`;
-      if (data.status === "received" && receivedTime) {
+      
+      // Enhanced receipt history display
+      let receiptHistoryHtml = '';
+      if (data.receipts && data.receipts.length > 0) {
+        receiptHistoryHtml = `
+          <div class="receipt-history">
+            <div class="receipt-history-title">📋 Receipt History</div>
+        `;
+        
+        data.receipts.forEach((receipt, index) => {
+          const receiptTime = formatTimestamp(receipt.timestamp);
+          const receiptIcon = getPaymentMethodIcon(receipt.method);
+          receiptHistoryHtml += `
+            <div class="receipt-item">
+              <div class="receipt-details">
+                <span class="receipt-method-icon">${receiptIcon}</span>
+                <span>${receipt.method}</span>
+                <span class="receipt-time">${receiptTime}</span>
+              </div>
+              <div class="receipt-amount">₹${receipt.amount}</div>
+            </div>
+          `;
+        });
+        
+        receiptHistoryHtml += `</div>`;
+      } else if (data.status === "received" && receivedTime) {
         timeDisplay += `<div class="time-row received-indicator"><span class="time-label">✅ Received:</span><span>${receivedTime}</span></div>`;
-      } else if (data.status === "partial" && data.receipts && data.receipts.length > 0) {
-        const lastReceipt = data.receipts[data.receipts.length - 1];
-        const lastReceiptTime = formatTimestamp(lastReceipt.timestamp);
-        timeDisplay += `<div class="time-row partial-indicator"><span class="time-label">🔶 Last:</span><span>${lastReceiptTime}</span></div>`;
       }
 
       // Button text based on status
@@ -1518,6 +1591,8 @@
           ${metaTags ? `<div class="entry-meta">${metaTags}</div>` : ""}
 
           <div class="entry-time">${timeDisplay}</div>
+          
+          ${receiptHistoryHtml}
         </div>
 
         <button class="${buttonClass}" ${data.status === "received" ? "disabled" : ""}>
