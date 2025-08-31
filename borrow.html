@@ -7,21 +7,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary-color: #1a1a1a;
-      --accent-blue: #2563eb;
-      --accent-green: #10b981;
-      --accent-orange: #f59e0b;
-      --accent-red: #ef4444;
-      --accent-purple: #8b5cf6;
-      --background: #f8f9fa;
-      --card-bg: #ffffff;
-      --border: #e9ecef;
-      --text-primary: #1a1a1a;
-      --text-secondary: #6c757d;
-      --text-light: #adb5bd;
-      --shadow: 0 2px 4px rgba(0,0,0,0.1);
-      --shadow-lg: 0 4px 12px rgba(0,0,0,0.15);
-      --radius: 12px;
+      --primary: #000;
+      --accent: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --background: #fafafa;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #111827;
+      --text-secondary: #6b7280;
+      --text-light: #9ca3af;
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+      --radius: 8px;
     }
 
     * {
@@ -31,68 +29,139 @@
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Inter', system-ui, sans-serif;
       background: var(--background);
-      color: var(--text-primary);
+      color: var(--text);
       line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-      padding-top: 70px;
+      padding-top: 50px;
+      font-size: 14px;
     }
 
     .container {
       max-width: 428px;
       margin: 0 auto;
-      background: var(--card-bg);
+      background: var(--surface);
       min-height: 100vh;
     }
 
-    .header {
-      padding: 16px 20px 12px;
+    /* Navigation */
+    .mobile-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 50px;
+    }
+    
+    .nav-brand {
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--text);
+    }
+    
+    .nav-toggle {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px;
+      color: var(--text-secondary);
+    }
+    
+    .nav-menu {
+      position: fixed;
+      top: 50px;
+      left: 0;
+      width: 100%;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 8px;
+      display: none;
+      z-index: 999;
+    }
+    
+    .nav-menu.active {
+      display: block;
+    }
+    
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      text-decoration: none;
+      color: var(--text-secondary);
+      border-radius: 6px;
+      transition: all 0.2s;
+      font-weight: 500;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+    
+    .nav-link.active {
+      background: var(--accent);
+      color: white;
+    }
+    
+    .nav-icon {
+      margin-right: 8px;
+      width: 16px;
       text-align: center;
-      background: var(--card-bg);
+    }
+
+    /* Header */
+    .header {
+      padding: 12px 16px;
+      text-align: center;
       border-bottom: 1px solid var(--border);
     }
 
     .header h1 {
-      font-size: 1.3rem;
+      font-size: 18px;
       font-weight: 600;
-      color: var(--text-primary);
+      color: var(--text);
     }
 
+    /* Total Pending */
     .total-pending {
-      background: var(--card-bg);
+      background: var(--surface);
       padding: 12px 16px;
-      margin: 16px 16px 0;
+      margin: 12px;
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
       text-align: center;
-      border-left: 4px solid var(--accent-red);
     }
 
     .total-pending-label {
-      font-size: 0.8rem;
+      font-size: 12px;
       color: var(--text-secondary);
       margin-bottom: 4px;
     }
 
     .total-pending-amount {
-      font-size: 1.4rem;
+      font-size: 24px;
       font-weight: 700;
-      color: var(--accent-red);
+      color: var(--danger);
     }
 
+    /* Main Content */
     .main-content {
-      padding: 16px;
-      background: var(--background);
+      padding: 12px;
     }
 
+    /* Form */
     .form-container {
-      background: var(--card-bg);
+      background: var(--surface);
       border-radius: var(--radius);
+      border: 1px solid var(--border);
       padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: var(--shadow);
-      animation: slideDown 0.3s ease;
+      margin-bottom: 12px;
     }
 
     .form-row {
@@ -114,28 +183,23 @@
       display: block;
       margin-bottom: 4px;
       font-weight: 500;
-      color: var(--text-primary);
-      font-size: 0.85rem;
+      color: var(--text);
+      font-size: 13px;
     }
 
     .form-input {
       width: 100%;
       padding: 10px 12px;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.9rem;
-      background: var(--card-bg);
-      color: var(--text-primary);
-      transition: border-color 0.2s ease;
+      border-radius: 6px;
+      font-size: 14px;
+      background: var(--surface);
+      transition: border-color 0.2s;
     }
 
     .form-input:focus {
       outline: none;
-      border-color: var(--accent-blue);
-    }
-
-    .form-input::placeholder {
-      color: var(--text-light);
+      border-color: var(--accent);
     }
 
     .payment-methods {
@@ -149,22 +213,21 @@
       padding: 8px 6px;
       border: 1px solid var(--border);
       border-radius: 6px;
-      background: var(--card-bg);
+      background: var(--surface);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s;
       text-align: center;
-      font-size: 0.8rem;
+      font-size: 12px;
       font-weight: 500;
-      color: var(--text-secondary);
     }
 
     .payment-method:hover {
-      border-color: var(--accent-blue);
+      border-color: var(--accent);
     }
 
     .payment-method.active {
-      border-color: var(--accent-blue);
-      background: var(--accent-blue);
+      border-color: var(--accent);
+      background: var(--accent);
       color: white;
     }
 
@@ -173,50 +236,53 @@
       display: none;
     }
 
-    .form-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
+    /* Buttons */
     .btn {
-      padding: 10px 14px;
+      padding: 10px 16px;
       border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.85rem;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 14px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s;
     }
 
     .btn-primary {
-      background: var(--accent-green);
+      background: var(--success);
       color: white;
     }
 
     .btn-primary:hover {
-      background: #059669;
+      opacity: 0.9;
     }
 
     .btn-secondary {
-      background: var(--background);
-      color: var(--text-primary);
+      background: var(--surface);
+      color: var(--text);
       border: 1px solid var(--border);
     }
 
-    .btn-secondary:hover {
-      background: var(--border);
+    .form-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 16px;
     }
 
+    #addEntryBtn {
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    /* Filters */
     .filters {
       display: flex;
-      background: var(--card-bg);
+      background: var(--surface);
       border-radius: var(--radius);
+      border: 1px solid var(--border);
       padding: 4px;
       gap: 4px;
-      margin-bottom: 16px;
-      box-shadow: var(--shadow);
+      margin-bottom: 12px;
     }
 
     .filter-btn {
@@ -224,25 +290,25 @@
       padding: 8px 12px;
       background: transparent;
       border: none;
-      border-radius: 8px;
+      border-radius: 4px;
       font-weight: 500;
-      font-size: 0.85rem;
+      font-size: 13px;
       color: var(--text-secondary);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s;
     }
 
     .filter-btn.active {
-      background: var(--accent-blue);
+      background: var(--accent);
       color: white;
-      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
     }
 
+    /* Entries */
     .entries-list {
-      background: var(--card-bg);
+      background: var(--surface);
       border-radius: var(--radius);
+      border: 1px solid var(--border);
       overflow: hidden;
-      box-shadow: var(--shadow);
     }
 
     .entry-item {
@@ -261,30 +327,12 @@
 
     .entry-item.received {
       background: rgba(16, 185, 129, 0.02);
+      border-left: 3px solid var(--success);
     }
 
     .entry-item.partial {
       background: rgba(245, 158, 11, 0.02);
-    }
-
-    .entry-item.received::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background: var(--accent-green);
-    }
-
-    .entry-item.partial::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background: var(--accent-orange);
+      border-left: 3px solid var(--warning);
     }
 
     .entry-left {
@@ -300,64 +348,59 @@
 
     .entry-name {
       font-weight: 600;
-      font-size: 1.05rem;
-      color: var(--text-primary);
-      line-height: 1.3;
+      font-size: 16px;
+      color: var(--text);
     }
 
     .entry-amount {
       font-weight: 700;
-      font-size: 1.1rem;
-      color: var(--accent-blue);
-      text-align: right;
+      font-size: 16px;
+      color: var(--accent);
     }
 
     .entry-amount.paid {
-      color: var(--accent-green);
+      color: var(--success);
     }
 
     .entry-amount.partial {
-      color: var(--accent-orange);
+      color: var(--warning);
     }
 
     .amount-breakdown {
-      font-size: 0.75rem;
+      font-size: 11px;
       color: var(--text-secondary);
-      text-align: right;
       margin-top: 2px;
     }
 
     .entry-meta {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
+      gap: 6px;
+      margin-bottom: 8px;
       flex-wrap: wrap;
     }
 
     .entry-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
       padding: 3px 8px;
       border-radius: 12px;
-      font-size: 0.75rem;
+      font-size: 11px;
       font-weight: 500;
+      background: var(--background);
+      color: var(--text-secondary);
     }
 
     .entry-tag.description {
       background: rgba(245, 158, 11, 0.1);
-      color: var(--accent-orange);
-    }
-
-    .entry-tag.payment-method {
-      background: rgba(37, 99, 235, 0.1);
-      color: var(--accent-blue);
+      color: var(--warning);
     }
 
     .entry-tag.borrow-method {
-      background: rgba(139, 92, 246, 0.1);
-      color: var(--accent-purple);
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--accent);
+    }
+
+    .entry-tag.payment-method {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
     }
 
     .entry-details {
@@ -376,118 +419,47 @@
     }
 
     .entry-time {
-      font-size: 0.72rem;
+      font-size: 12px;
       color: var(--text-light);
-      line-height: 1.4;
     }
 
-    .entry-time .time-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .time-row {
       margin-bottom: 2px;
-    }
-
-    .entry-time .time-row:last-child {
-      margin-bottom: 0;
     }
 
     .time-label {
       font-weight: 500;
-      min-width: 45px;
-      font-size: 0.7rem;
+      margin-right: 4px;
     }
 
-    .paid-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      color: var(--accent-green);
-      font-weight: 500;
-    }
-
-    .partial-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      color: var(--accent-orange);
-      font-weight: 500;
-    }
-
+    /* Action Button */
     .entry-action {
-      padding: 6px 10px;
-      background: var(--accent-blue);
+      padding: 6px 12px;
+      background: var(--accent);
       color: white;
       border: none;
       border-radius: 6px;
-      font-size: 0.7rem;
+      font-size: 12px;
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s;
       white-space: nowrap;
     }
 
     .entry-action:hover:not(:disabled) {
-      background: #1d4ed8;
+      opacity: 0.9;
     }
 
     .entry-action:disabled {
-      background: var(--accent-green);
+      background: var(--success);
       cursor: not-allowed;
-      font-size: 0.65rem;
     }
 
     .entry-action.partial-pay {
-      background: var(--accent-orange);
+      background: var(--warning);
     }
 
-    .entry-action.partial-pay:hover {
-      background: #d97706;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 30px 20px;
-      color: var(--text-secondary);
-    }
-
-    .empty-icon {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-      opacity: 0.5;
-    }
-
-    .empty-title {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: var(--text-primary);
-    }
-
-    .empty-description {
-      font-size: 0.85rem;
-      line-height: 1.4;
-    }
-
-    .loading {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 30px;
-      gap: 10px;
-      color: var(--text-secondary);
-    }
-
-    .spinner {
-      width: 14px;
-      height: 14px;
-      border: 2px solid var(--border);
-      border-top: 2px solid var(--accent-blue);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    /* Payment Method Modal */
+    /* Modal */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -502,13 +474,13 @@
     }
 
     .modal-content {
-      background: var(--card-bg);
+      background: var(--surface);
       border-radius: var(--radius);
       padding: 20px;
       margin: 20px;
       max-width: 350px;
       width: 100%;
-      box-shadow: var(--shadow-lg);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     }
 
     .modal-header {
@@ -517,43 +489,40 @@
     }
 
     .modal-title {
-      font-size: 1.1rem;
+      font-size: 18px;
       font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
 
     .modal-subtitle {
-      font-size: 0.85rem;
+      font-size: 14px;
       color: var(--text-secondary);
     }
 
     .modal-payment-methods {
       display: grid;
-      gap: 10px;
+      gap: 8px;
       margin-bottom: 20px;
     }
 
     .modal-payment-method {
-      padding: 12px 16px;
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      background: var(--card-bg);
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s;
       text-align: center;
       font-weight: 500;
-      color: var(--text-primary);
     }
 
     .modal-payment-method:hover {
-      border-color: var(--accent-blue);
+      border-color: var(--accent);
     }
 
     .modal-payment-method.active {
-      border-color: var(--accent-blue);
+      border-color: var(--accent);
       background: rgba(37, 99, 235, 0.1);
-      color: var(--accent-blue);
+      color: var(--accent);
     }
 
     .partial-payment-section {
@@ -565,6 +534,7 @@
       align-items: center;
       gap: 8px;
       margin-bottom: 12px;
+      font-size: 14px;
     }
 
     .partial-amount-input {
@@ -577,309 +547,85 @@
       gap: 10px;
     }
 
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-secondary);
+    }
+
+    .empty-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .empty-description {
+      font-size: 14px;
+    }
+
+    /* Loading */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      gap: 8px;
+      color: var(--text-secondary);
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top: 2px solid var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      to { transform: rotate(360deg); }
     }
 
-    @media screen and (max-width: 480px) {
+    @media (max-width: 480px) {
       .main-content {
-        padding: 12px;
+        padding: 8px;
       }
     }
-
-    #addEntryBtn {
-      width: 100%;
-      display: block;
-      margin-bottom: 16px;
-    }
-    .mobile-nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-            font-size: 1.2rem;
-        }
-        
-        .nav-brand-icon {
-            margin-right: 0.5rem;
-            font-size: 1.4rem;
-        }
-        
-        .nav-toggle {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.25rem;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
-        
-        .nav-toggle:active {
-            background: #f1f5f9;
-        }
-        
-        .nav-menu {
-            position: fixed;
-            top: 60px;
-            left: 0;
-            width: 100%;
-            background: white;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 1rem;
-            display: none;
-            flex-direction: column;
-            z-index: 999;
-        }
-        
-        .nav-menu.active {
-            display: flex;
-        }
-        
-        .nav-item {
-            list-style: none;
-            margin-bottom: 0.5rem;
-        }
-        
-        .nav-link {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            text-decoration: none;
-            color: #64748b;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-            font-weight: 500;
-        }
-        
-        .nav-link:active {
-            background: #f1f5f9;
-            color: #10b981;
-        }
-        
-        .nav-link.active {
-            background: #ecfdf5;
-            color: #10b981;
-        }
-        
-        .nav-icon {
-            margin-right: 0.75rem;
-            font-size: 1.1rem;
-            width: 20px;
-            text-align: center;
-        }
-        
-        /* Content styles to match your design */
-        .btn-primary1 {
-            width: 100%;
-            padding: 0.75rem;
-            background: #10b981;
-            border: none;
-            border-radius: 6px;
-            color: white;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            margin-bottom: 0.5rem;
-            transition: all 0.2s ease;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .stat-card {
-            background: #f1f5f9;
-            border-radius: 6px;
-            padding: 0.5rem;
-            text-align: center;
-            border-left: 2px solid #64748b;
-        }
-        
-        .stat-card.account-balance {
-            grid-column: 1 / -1;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-left: none;
-            font-size: 1rem;
-            padding: 1rem;
-        }
-        
-        .stat-title {
-            font-size: 0.6rem;
-            color: #64748b;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.25rem;
-        }
-        
-        .stat-card.account-balance .stat-title {
-            color: rgba(255, 255, 255, 0.9);
-        }
-        
-        .stat-amount {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #1e293b;
-        }
-        
-        .stat-card.account-balance .stat-amount {
-            color: white;
-            font-size: 1.2rem;
-        }
-        
-        .item {
-            background: #fff;
-            border-radius: 8px;
-            padding: 0.8rem;
-            margin-bottom: 0.8rem;
-            font-size: 0.8rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e2e8f0;
-        }
-        
-        .item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.4rem;
-        }
-        
-        .item-category {
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 0.85rem;
-        }
-        
-        .item-payment {
-            color: #64748b;
-            font-size: 0.75rem;
-        }
-        
-        .item-description {
-            color: #64748b;
-            font-size: 0.75rem;
-            margin-bottom: 0.4rem;
-        }
-        
-        .item-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .item-date {
-            font-size: 0.7rem;
-            color: #94a3b8;
-        }
-        
-        .item-amount {
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 0.9rem;
-        }
-        
-        .nav-btn {
-            width: 100%;
-            padding: 0.7rem;
-            background: #f59e0b;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: white;
-            cursor: pointer;
-            transition: background 0.2s ease;
-            margin-bottom: 0.5rem;
-        }
-        
-        .nav-btn.account {
-            background: #667eea;
-        }
   </style>
 </head>
 <body>
 
-          <!-- Mobile Navigation -->
-    <nav class="mobile-nav">
-        <div class="nav-brand">
-            <span class="nav-brand-icon">🏦</span>
-            <span>Borrow Details</span>
-        </div>
-        <button class="nav-toggle" id="navToggle">☰</button>
-        <ul class="nav-menu" id="navMenu">
-            <li class="nav-item">
-                <a href="index.html" class="nav-link">
-                    <span class="nav-icon">💰</span>
-                    <span>Expenses</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="lend.html" class="nav-link">
-                    <span class="nav-icon">🤝</span>
-                    <span>Lend Records</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="account.html" class="nav-link">
-                    <span class="nav-icon">🪪</span>
-                    <span>Account Details</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="borrow.html" class="nav-link active">
-                    <span class="nav-icon">🏦</span>
-                    <span>Borrow Details</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+  <!-- Navigation -->
+  <nav class="mobile-nav">
+    <div class="nav-brand">Borrow Details</div>
+    <button class="nav-toggle" id="navToggle">☰</button>
+    <ul class="nav-menu" id="navMenu">
+      <li><a href="index.html" class="nav-link"><span class="nav-icon">💰</span>Expenses</a></li>
+      <li><a href="lend.html" class="nav-link"><span class="nav-icon">🤝</span>Lend Records</a></li>
+      <li><a href="account.html" class="nav-link"><span class="nav-icon">🪪</span>Account Details</a></li>
+      <li><a href="borrow.html" class="nav-link active"><span class="nav-icon">🏦</span>Borrow Details</a></li>
+    </ul>
+  </nav>
 
   <div class="container">
     <header class="header">
-      <h1>💰 Borrow Tracker</h1>
+      <h1>Borrow Tracker</h1>
     </header>
 
-    <!-- Total Pending Amount -->
+    <!-- Total Pending -->
     <div class="total-pending">
       <div class="total-pending-label">Total Pending Amount</div>
       <div class="total-pending-amount" id="totalPendingAmount">₹0</div>
     </div>
 
     <main class="main-content">
-      <!-- Add Borrow Entry Button -->
-      <button id="addEntryBtn" class="btn btn-primary">+ Add Borrow Entry</button>
+      
+      <!-- Add Entry Button -->
+      <button id="addEntryBtn" class="btn btn-primary">Add Borrow Entry</button>
 
-      <!-- Entry Form -->
+      <!-- Add Form -->
       <div id="formContainer" class="form-container" style="display: none;">
         <form id="borrowForm">
           <div class="form-row">
@@ -894,7 +640,7 @@
           </div>
 
           <div class="form-group full-width">
-            <label for="description">Description</label>
+            <label for="description">Description (Optional)</label>
             <input type="text" id="description" class="form-input" placeholder="Why borrowed?" />
           </div>
 
@@ -905,14 +651,15 @@
               <div class="payment-method" data-method="UPI">📱 UPI</div>
               <div class="payment-method" data-method="Other">🏦 Other</div>
             </div>
-            <div class="other-method-input">
-              <input type="text" id="formOtherMethod" class="form-input" placeholder="Enter method" />
-            </div>
+          </div>
+
+          <div class="other-method-input">
+            <input type="text" id="formOtherMethod" class="form-input" placeholder="Enter method" />
           </div>
 
           <div class="form-actions">
-            <button type="submit" class="btn btn-primary">✅ Save</button>
-            <button type="button" id="cancelFormBtn" class="btn btn-secondary">❌ Cancel</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" id="cancelFormBtn" class="btn btn-secondary">Cancel</button>
           </div>
         </form>
       </div>
@@ -937,22 +684,21 @@
     </main>
   </div>
 
-  <!-- Payment Method Modal -->
+  <!-- Payment Modal -->
   <div id="paymentModal" class="modal-overlay" style="display: none;">
     <div class="modal-content">
       <div class="modal-header">
         <div class="modal-title">Record Payment</div>
-        <div class="modal-subtitle">How did you receive the payment?</div>
+        <div class="modal-subtitle">How did you pay them back?</div>
       </div>
 
-      <!-- Partial Payment Section -->
       <div class="partial-payment-section">
         <div class="partial-payment-toggle">
           <input type="checkbox" id="partialPaymentCheck">
           <label for="partialPaymentCheck">Partial Payment</label>
         </div>
         <div class="partial-amount-input">
-          <input type="number" id="partialAmount" class="form-input" placeholder="Enter amount received" />
+          <input type="number" id="partialAmount" class="form-input" placeholder="Enter amount paid" />
         </div>
       </div>
 
@@ -961,12 +707,14 @@
         <div class="modal-payment-method" data-method="UPI">📱 UPI</div>
         <div class="modal-payment-method" data-method="Other">🏦 Other</div>
       </div>
+      
       <div class="other-method-input">
         <input type="text" id="otherMethodText" class="form-input" placeholder="Enter payment method" />
       </div>
+      
       <div class="modal-actions">
-        <button id="confirmPayment" class="btn btn-primary">✅ Confirm</button>
-        <button id="cancelPayment" class="btn btn-secondary">❌ Cancel</button>
+        <button id="confirmPayment" class="btn btn-primary">Confirm</button>
+        <button id="cancelPayment" class="btn btn-secondary">Cancel</button>
       </div>
     </div>
   </div>
@@ -974,38 +722,23 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-        <script>
-        // Navigation toggle functionality
-        const navToggle = document.getElementById('navToggle');
-        const navMenu = document.getElementById('navMenu');
-        
-        navToggle.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-        });
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
-                navMenu.classList.remove('active');
-            }
-        });
-        
-        // Handle navigation item clicks
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                // Remove active class from all links
-                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-                
-                // Add active class to clicked link
-                e.currentTarget.classList.add('active');
-                
-                // Close the menu
-                navMenu.classList.remove('active');
-            });
-        });
-    </script>
-
   <script>
+    // Navigation toggle functionality
+    const navToggle = document.getElementById('navToggle');
+    const navMenu = document.getElementById('navMenu');
+    
+    navToggle.addEventListener('click', () => {
+      navMenu.classList.toggle('active');
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
+        navMenu.classList.remove('active');
+      }
+    });
+
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyAk6-ojS17WvRyCn-4mqQgOxRtk6aa1hAc",
       authDomain: "nutritiontracker-56702.firebaseapp.com",
@@ -1034,7 +767,7 @@
     // Payment modal elements
     const paymentModal = document.getElementById("paymentModal");
     const modalPaymentMethods = document.querySelectorAll(".modal-payment-method");
-    const otherMethodInput = document.querySelector(".other-method-input");
+    const otherMethodInput = document.querySelectorAll(".other-method-input")[1];
     const otherMethodText = document.getElementById("otherMethodText");
     const confirmPaymentBtn = document.getElementById("confirmPayment");
     const cancelPaymentBtn = document.getElementById("cancelPayment");
@@ -1264,7 +997,6 @@
             await createAccountTransactionForBorrow(borrowData, docId, borrowMethodText);
           } catch (accountError) {
             console.error('Failed to create account transaction for borrow:', accountError);
-            // Don't fail the entire operation if account transaction fails
             alert('Borrow saved, but failed to update account balance.');
           }
         }
@@ -1275,7 +1007,7 @@
         alert("Failed to save entry.");
       } finally {
         saveBtn.disabled = false;
-        saveBtn.textContent = "✅ Save";
+        saveBtn.textContent = "Save";
       }
     }
 
@@ -1323,25 +1055,53 @@
       // Build meta tags
       let metaTags = '';
       if (data.description) {
-        metaTags += `<span class="entry-tag description">📝 ${data.description}</span>`;
+        metaTags += `<span class="entry-tag description">${data.description}</span>`;
       }
       if (data.borrowMethod) {
-        const borrowIcon = getPaymentMethodIcon(data.borrowMethod);
-        metaTags += `<span class="entry-tag borrow-method">${borrowIcon} ${data.borrowMethod}</span>`;
+        metaTags += `<span class="entry-tag borrow-method">${data.borrowMethod}</span>`;
       }
       if (data.status === "paid" && data.paymentMethod) {
-        const paymentIcon = getPaymentMethodIcon(data.paymentMethod);
-        metaTags += `<span class="entry-tag payment-method">${paymentIcon} ${data.paymentMethod}</span>`;
+        metaTags += `<span class="entry-tag payment-method">${data.paymentMethod}</span>`;
       }
 
       // Build time display
-      let timeDisplay = `<div class="time-row"><span class="time-label">Created:</span><span>${createdTime}</span></div>`;
+      let timeDisplay = `<div class="time-row"><span class="time-label">Created:</span> ${createdTime}</div>`;
       if (data.status === "paid" && paidTime) {
-        timeDisplay += `<div class="time-row paid-indicator"><span class="time-label">✅ Paid:</span><span>${paidTime}</span></div>`;
+        timeDisplay += `<div class="time-row"><span class="time-label">Paid:</span> ${paidTime}</div>`;
       } else if (data.status === "partial" && data.payments && data.payments.length > 0) {
         const lastPayment = data.payments[data.payments.length - 1];
         const lastPaymentTime = formatTimestamp(lastPayment.timestamp);
-        timeDisplay += `<div class="time-row partial-indicator"><span class="time-label">🔶 Last:</span><span>${lastPaymentTime}</span></div>`;
+        timeDisplay += `<div class="time-row"><span class="time-label">Last:</span> ${lastPaymentTime}</div>`;
+      }
+
+      // Add payment history only if there are multiple payments (partial payments)
+      let paymentHistoryHtml = '';
+      if (data.payments && data.payments.length > 1) {
+        const paymentCount = data.payments.length;
+        
+        paymentHistoryHtml = `
+          <div style="margin-top: 12px; background: var(--background); border-radius: 6px; border: 1px solid var(--border); overflow: hidden;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; cursor: pointer; font-size: 12px; font-weight: 500; color: var(--text-secondary); background: var(--surface);" onclick="togglePaymentHistory(this)">
+              <span>Payment History <span style="background: var(--accent); color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-left: 6px;">${paymentCount}</span></span>
+              <div style="font-size: 12px; transition: transform 0.2s; transform: rotate(-90deg);">▼</div>
+            </div>
+            <div style="max-height: 0; opacity: 0; transition: all 0.3s; overflow: hidden;">
+        `;
+        
+        data.payments.forEach((payment, index) => {
+          const paymentTime = formatTimestamp(payment.timestamp);
+          paymentHistoryHtml += `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-top: 1px solid var(--border); background: var(--surface);">
+              <div>
+                <div style="font-size: 12px; font-weight: 500; color: var(--text);">${payment.method}</div>
+                <div style="font-size: 11px; color: var(--text-light); margin-top: 2px;">${paymentTime}</div>
+              </div>
+              <div style="font-weight: 600; color: var(--success); font-size: 14px;">₹${payment.amount}</div>
+            </div>
+          `;
+        });
+        
+        paymentHistoryHtml += `</div></div>`;
       }
 
       // Button text based on status
@@ -1351,7 +1111,7 @@
         buttonText = "Pay More";
         buttonClass = "entry-action partial-pay";
       } else if (data.status === "paid") {
-        buttonText = "✅";
+        buttonText = "✓";
         buttonClass = "entry-action";
       }
 
@@ -1359,11 +1119,16 @@
         <div class="entry-left">
           <div class="entry-header">
             <div class="entry-name">${data.name}</div>
-            <div class="entry-amount ${amountClass}">₹${displayAmount}${amountBreakdown}</div>
+            <div class="entry-amount ${amountClass}">₹${displayAmount.toLocaleString("en-IN")}${amountBreakdown}</div>
           </div>
+          
           ${metaTags ? `<div class="entry-meta">${metaTags}</div>` : ""}
+
           <div class="entry-time">${timeDisplay}</div>
+          
+          ${paymentHistoryHtml}
         </div>
+
         <button class="${buttonClass}" ${data.status === "paid" ? "disabled" : ""}>
           ${buttonText}
         </button>
@@ -1381,56 +1146,31 @@
     async function getNextAccountTransactionId() {
       try {
         const counterRef = db.collection('counters').doc('transactionCounter');
-        
-        // First, try to get existing counter
         const counterDoc = await counterRef.get();
         
         if (counterDoc.exists) {
           const currentCount = counterDoc.data().count;
           const newCount = currentCount + 1;
-          
-          // Update counter
           await counterRef.update({ count: newCount });
-          console.log('Generated account transaction ID:', `tnx_${newCount}`);
           return `tnx_${newCount}`;
         } else {
-          // Initialize counter with 1
           await counterRef.set({ count: 1 });
-          console.log('Generated account transaction ID: tnx_1');
           return 'tnx_1';
         }
       } catch (error) {
         console.error('Error in getNextAccountTransactionId:', error);
-        
-        // Simple fallback - just get count of existing documents + 1
-        try {
-          const snapshot = await db.collection('account').get();
-          const nextId = snapshot.size + 1;
-          console.log('Fallback generated account ID:', `tnx_${nextId}`);
-          return `tnx_${nextId}`;
-        } catch (fallbackError) {
-          console.error('Account fallback also failed:', fallbackError);
-          // Last resort - use a simple number
-          const simpleId = Math.floor(Math.random() * 10000) + 1;
-          return `tnx_${simpleId}`;
-        }
+        const snapshot = await db.collection('account').get();
+        const nextId = snapshot.size + 1;
+        return `tnx_${nextId}`;
       }
     }
 
     async function createAccountTransactionForBorrow(borrowData, borrowId, borrowMethod) {
       try {
-        console.log('Creating account transaction for borrow:', borrowId, borrowData);
-        
-        // Get the latest account balance before creating transaction
         await loadAccountBalance();
-        
-        // Get the incremental transaction ID
         const transactionId = await getNextAccountTransactionId();
-        
-        // Calculate new balance (credit for borrowing money via UPI)
         const newBalance = currentAccountBalance + borrowData.amount;
         
-        // Create account transaction
         const accountTransaction = {
           amount: borrowData.amount,
           type: 'credit',
@@ -1442,15 +1182,9 @@
           auto_created: true
         };
         
-        // Add transaction to account collection
         await db.collection("account").doc(transactionId).set(accountTransaction);
-        
-        // Update current balance
         currentAccountBalance = newBalance;
-        
-        console.log('Account transaction created successfully for borrow:', transactionId);
         return transactionId;
-        
       } catch (error) {
         console.error('Error creating account transaction for borrow:', error);
         throw error;
@@ -1459,18 +1193,10 @@
 
     async function createAccountTransaction(borrowData, borrowId, paymentMethod, paymentAmount) {
       try {
-        console.log('Creating account transaction for borrow payment:', borrowId, borrowData);
-        
-        // Get the latest account balance before creating transaction
         await loadAccountBalance();
-        
-        // Get the incremental transaction ID
         const transactionId = await getNextAccountTransactionId();
-        
-        // Calculate new balance (Debit for receiving borrow payment)
         const newBalance = currentAccountBalance - paymentAmount;
         
-        // Create account transaction
         const accountTransaction = {
           amount: paymentAmount,
           type: 'debit',
@@ -1482,15 +1208,9 @@
           auto_created: true
         };
         
-        // Add transaction to account collection
         await db.collection("account").doc(transactionId).set(accountTransaction);
-        
-        // Update current balance
         currentAccountBalance = newBalance;
-        
-        console.log('Account transaction created successfully:', transactionId);
         return transactionId;
-        
       } catch (error) {
         console.error('Error creating account transaction:', error);
         throw error;
@@ -1499,7 +1219,6 @@
 
     async function markAsPaid(id, paymentMethod, isPartial = false, paymentAmount = null) {
       try {
-        // Get borrow data first
         const borrowDoc = await db.collection("borrow").doc(id).get();
         if (!borrowDoc.exists) {
           throw new Error("Borrow entry not found");
@@ -1515,7 +1234,6 @@
           paymentMethod: paymentMethod
         };
         
-        // Initialize payments array if it doesn't exist
         const payments = borrowData.payments || [];
         
         if (isPartial) {
@@ -1523,19 +1241,16 @@
           const remaining = originalAmount - newTotalPaid;
           
           if (remaining <= 0) {
-            // Full payment completed
             updateData.status = "paid";
             updateData.amount = 0;
             updateData.totalPaid = originalAmount;
           } else {
-            // Partial payment
             updateData.status = "partial";
             updateData.amount = remaining;
             updateData.totalPaid = newTotalPaid;
             updateData.originalAmount = originalAmount;
           }
           
-          // Add payment record
           payments.push({
             amount: paymentAmount,
             method: paymentMethod,
@@ -1543,22 +1258,18 @@
           });
           updateData.payments = payments;
           
-          // Create account transaction for UPI payments
           if (paymentMethod === "UPI") {
             try {
-              const accountTransactionId = await createAccountTransaction(borrowData, id, paymentMethod, paymentAmount);
-              console.log('Account transaction created for UPI payment:', accountTransactionId);
+              await createAccountTransaction(borrowData, id, paymentMethod, paymentAmount);
             } catch (accountError) {
               console.error('Failed to create account transaction:', accountError);
               alert('Payment recorded, but failed to update account balance.');
             }
           }
         } else {
-          // Full payment
           updateData.status = "paid";
           const fullAmount = borrowData.status === "partial" ? (originalAmount - totalPaid) : currentAmount;
           
-          // Add payment record
           payments.push({
             amount: fullAmount,
             method: paymentMethod,
@@ -1570,11 +1281,9 @@
             updateData.totalPaid = originalAmount;
           }
           
-          // Create account transaction for UPI payments
           if (paymentMethod === "UPI") {
             try {
-              const accountTransactionId = await createAccountTransaction(borrowData, id, paymentMethod, fullAmount);
-              console.log('Account transaction created for UPI payment:', accountTransactionId);
+              await createAccountTransaction(borrowData, id, paymentMethod, fullAmount);
             } catch (accountError) {
               console.error('Failed to create account transaction:', accountError);
               alert('Payment recorded, but failed to update account balance.');
@@ -1582,9 +1291,7 @@
           }
         }
         
-        // Update borrow document
         await db.collection("borrow").doc(id).update(updateData);
-        
         loadEntries();
       } catch (error) {
         console.error('Error marking as paid:', error);
@@ -1600,7 +1307,7 @@
       });
 
       if (filtered.length === 0) {
-        entriesList.innerHTML = `<div class="empty-state">No entries found</div>`;
+        entriesList.innerHTML = `<div class="empty-state"><div class="empty-title">No entries found</div></div>`;
         return;
       }
 
@@ -1610,6 +1317,21 @@
         entriesList.appendChild(item);
       });
     }
+
+    window.togglePaymentHistory = function(headerElement) {
+      const paymentItems = headerElement.nextElementSibling;
+      const toggle = headerElement.querySelector('div:last-child');
+      
+      if (paymentItems.style.maxHeight === '0px' || !paymentItems.style.maxHeight) {
+        paymentItems.style.maxHeight = '200px';
+        paymentItems.style.opacity = '1';
+        toggle.style.transform = 'rotate(0deg)';
+      } else {
+        paymentItems.style.maxHeight = '0px';
+        paymentItems.style.opacity = '0';
+        toggle.style.transform = 'rotate(-90deg)';
+      }
+    };
 
     async function loadEntries() {
       entriesList.innerHTML = `<div class="loading"><div class="spinner"></div><span>Loading entries...</span></div>`;
@@ -1622,7 +1344,7 @@
         renderEntries();
         updateTotalPending();
       } catch (error) {
-        entriesList.innerHTML = `<div class="error">Failed to load entries</div>`;
+        entriesList.innerHTML = `<div class="empty-state"><div class="empty-title">Failed to load entries</div></div>`;
       }
     }
 

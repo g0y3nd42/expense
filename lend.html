@@ -412,92 +412,6 @@
       margin-right: 4px;
     }
 
-    /* Receipt History */
-    .receipt-history {
-      margin-top: 12px;
-      background: var(--background);
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      overflow: hidden;
-    }
-
-    .receipt-history-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 12px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      background: var(--surface);
-    }
-
-    .receipt-history-header:hover {
-      background: var(--background);
-    }
-
-    .receipt-count {
-      background: var(--accent);
-      color: white;
-      padding: 2px 6px;
-      border-radius: 10px;
-      font-size: 10px;
-      margin-left: 6px;
-    }
-
-    .receipt-toggle {
-      font-size: 12px;
-      transition: transform 0.2s;
-    }
-
-    .receipt-toggle.collapsed {
-      transform: rotate(-90deg);
-    }
-
-    .receipt-items {
-      max-height: 200px;
-      opacity: 1;
-      transition: all 0.3s;
-      overflow: hidden;
-    }
-
-    .receipt-items.collapsed {
-      max-height: 0;
-      opacity: 0;
-    }
-
-    .receipt-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 12px;
-      border-top: 1px solid var(--border);
-      background: var(--surface);
-    }
-
-    .receipt-item:hover {
-      background: var(--background);
-    }
-
-    .receipt-method {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text);
-    }
-
-    .receipt-time {
-      font-size: 11px;
-      color: var(--text-light);
-      margin-top: 2px;
-    }
-
-    .receipt-amount {
-      font-weight: 600;
-      color: var(--success);
-      font-size: 14px;
-    }
-
     /* Action Button */
     .entry-action {
       padding: 6px 12px;
@@ -715,7 +629,7 @@
               <div class="payment-methods">
                 <div class="payment-method" data-method="Cash">💵 Cash</div>
                 <div class="payment-method" data-method="UPI">📱 UPI</div>
-                <div class="payment-method" data-method="Card">💳 Card</div>
+                <div class="payment-method" data-method="Other">🏦 Other</div>
               </div>
             </div>
           </div>
@@ -777,7 +691,7 @@
       <div class="modal-payment-methods">
         <div class="modal-payment-method" data-method="Cash">💵 Cash</div>
         <div class="modal-payment-method" data-method="UPI">📱 UPI</div>
-        <div class="modal-payment-method" data-method="Card">💳 Card</div>
+        <div class="modal-payment-method" data-method="Other">🏦 Other</div>
       </div>
       
       <div class="other-method-input">
@@ -1155,7 +1069,7 @@
         
         await db.collection("lend").doc(documentId).set(lendData);
 
-        if (selectedLendMethod === "UPI" || selectedLendMethod === "Card") {
+        if (selectedLendMethod === "UPI" || selectedLendMethod === "Other") {
           try {
             await createAccountTransactionForLend(lendData, documentId, lendMethodText);
           } catch (accountError) {
@@ -1219,28 +1133,29 @@
         metaTags += `<span class="entry-tag description">${data.description}</span>`;
       }
 
+      // Add receipt history only if there are multiple receipts (partial payments)
       let receiptHistoryHtml = '';
-      if (data.receipts && data.receipts.length > 0) {
+      if (data.receipts && data.receipts.length > 1) {
         const receiptCount = data.receipts.length;
         
         receiptHistoryHtml = `
-          <div class="receipt-history">
-            <div class="receipt-history-header" onclick="toggleReceiptHistory(this)">
-              <span>Payment History <span class="receipt-count">${receiptCount}</span></span>
-              <div class="receipt-toggle collapsed">▼</div>
+          <div style="margin-top: 12px; background: var(--background); border-radius: 6px; border: 1px solid var(--border); overflow: hidden;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; cursor: pointer; font-size: 12px; font-weight: 500; color: var(--text-secondary); background: var(--surface);" onclick="toggleReceiptHistory(this)">
+              <span>Receipt History <span style="background: var(--accent); color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-left: 6px;">${receiptCount}</span></span>
+              <div style="font-size: 12px; transition: transform 0.2s; transform: rotate(-90deg);">▼</div>
             </div>
-            <div class="receipt-items collapsed">
+            <div style="max-height: 0; opacity: 0; transition: all 0.3s; overflow: hidden;">
         `;
         
         data.receipts.forEach((receipt, index) => {
           const receiptTime = formatTimestamp(receipt.timestamp);
           receiptHistoryHtml += `
-            <div class="receipt-item">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-top: 1px solid var(--border); background: var(--surface);">
               <div>
-                <div class="receipt-method">${receipt.method}</div>
-                <div class="receipt-time">${receiptTime}</div>
+                <div style="font-size: 12px; font-weight: 500; color: var(--text);">${receipt.method}</div>
+                <div style="font-size: 11px; color: var(--text-light); margin-top: 2px;">${receiptTime}</div>
               </div>
-              <div class="receipt-amount">₹${receipt.amount}</div>
+              <div style="font-weight: 600; color: var(--success); font-size: 14px;">₹${receipt.amount}</div>
             </div>
           `;
         });
@@ -1328,7 +1243,7 @@
           });
           updateData.receipts = receipts;
           
-          if (paymentMethod === "UPI" || paymentMethod === "Card") {
+          if (paymentMethod === "UPI" || paymentMethod === "Other") {
             try {
               await createAccountTransactionForReceipt(lendData, id, paymentMethod, receiptAmount);
             } catch (accountError) {
@@ -1350,7 +1265,7 @@
             updateData.totalReceived = originalAmount;
           }
           
-          if (paymentMethod === "UPI" || paymentMethod === "Card") {
+          if (paymentMethod === "UPI" || paymentMethod === "Other") {
             try {
               await createAccountTransactionForReceipt(lendData, id, paymentMethod, fullAmount);
             } catch (accountError) {
@@ -1415,14 +1330,16 @@
 
     window.toggleReceiptHistory = function(headerElement) {
       const receiptItems = headerElement.nextElementSibling;
-      const toggle = headerElement.querySelector('.receipt-toggle');
+      const toggle = headerElement.querySelector('div:last-child');
       
-      if (receiptItems.classList.contains('collapsed')) {
-        receiptItems.classList.remove('collapsed');
-        toggle.classList.remove('collapsed');
+      if (receiptItems.style.maxHeight === '0px' || !receiptItems.style.maxHeight) {
+        receiptItems.style.maxHeight = '200px';
+        receiptItems.style.opacity = '1';
+        toggle.style.transform = 'rotate(0deg)';
       } else {
-        receiptItems.classList.add('collapsed');
-        toggle.classList.add('collapsed');
+        receiptItems.style.maxHeight = '0px';
+        receiptItems.style.opacity = '0';
+        toggle.style.transform = 'rotate(-90deg)';
       }
     };
 
