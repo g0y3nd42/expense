@@ -1038,7 +1038,7 @@
             </div>
 
             <div class="stat-card monthly-lend">
-                <div class="stat-title">Monthly Lend (Pending)</div>
+                <div class="stat-title">Lend (Pending)</div>
                 <div class="stat-amount" id="monthlyLend">₹0</div>
                 <button class="nav-btn" id="showLend" hidden>View Lend Records</button>
                 <button class="nav-btn account" id="showAccount" hidden>View Account Tracker</button>
@@ -1439,6 +1439,15 @@
             document.getElementById('accountBalance').textContent = formatCurrency(currentAccountBalance);
         }
 
+        // Helper function to check if a date is in current month/year
+        function isDateInCurrentMonth(dateId) {
+            const { month, year } = getCurrentMonthYear();
+            const [day, monthStr, yearStr] = dateId.split('-');
+            const dateMonth = parseInt(monthStr, 10);
+            const dateYear = parseInt(yearStr, 10);
+            return dateMonth === month && dateYear === year;
+        }
+
         // DOM elements
         const expenseForm = document.getElementById('expenseForm');
         const splitForm = document.getElementById('splitForm');
@@ -1606,90 +1615,88 @@
             selectedSub = '';
         }
 
-        // Dashboard stats update
+        // FIXED Dashboard stats update with proper monthly filtering
         async function updateDashboard() {
             try {
                 const today = getTodayDateId();
                 const { month, year } = getCurrentMonthYear();
 
-                const expenseQuery = db.collection('expenses')
-                    .where('dateId', '>=', `01-${String(month).padStart(2, '0')}-${year}`)
-                    .where('dateId', '<=', `31-${String(month).padStart(2, '0')}-${year}`);
+                console.log('Dashboard update - Current month/year:', month, year);
+                console.log('Today dateId:', today);
 
-                const expenseSnap = await expenseQuery.get();
-
-                // Get ALL lend records and filter them manually by date pattern
+                // Get ALL expenses and filter in JavaScript for more reliable filtering
+                const allExpensesSnap = await db.collection('expenses').get();
+                
+                // Get ALL lend records (for all-time pending calculation)
                 const allLendSnap = await db.collection('lend').get();
 
                 let todayTotal = 0;
                 let todayUpiCash = 0;
                 let monthlyUpiCash = 0;
                 let monthlyCcPayLater = 0;
-                let monthlyLend = 0;
+                let allTimeLendPending = 0; // Changed to all-time
                 let monthlySplit = 0;
 
-                expenseSnap.forEach(doc => {
+                // Process expenses with proper month filtering
+                allExpensesSnap.forEach(doc => {
                     const data = doc.data();
                     const amount = data.amount || 0;
                     const mode = data.paymentMode?.toLowerCase();
                     const splitAmount = data.totalSplitAmount || 0;
+                    const expenseDate = data.dateId;
 
-                    if (data.dateId === today) {
+                    console.log('Processing expense:', expenseDate, amount, mode);
+
+                    // Today's totals
+                    if (expenseDate === today) {
                         todayTotal += amount;
                         if (mode === 'upi' || mode === 'cash') {
                             todayUpiCash += amount;
                         }
                     }
 
-                    if (mode === 'upi' || mode === 'cash') {
-                        monthlyUpiCash += amount;
-                    } else if (mode === 'paylater & cc' || mode === 'cc & paylater' || mode === 'credit card' || mode === 'card') {
-                        monthlyCcPayLater += amount;
-                    }
+                    // Monthly totals - use proper date filtering
+                    if (isDateInCurrentMonth(expenseDate)) {
+                        console.log('Expense is in current month:', expenseDate, amount, mode);
+                        
+                        if (mode === 'upi' || mode === 'cash') {
+                            monthlyUpiCash += amount;
+                        } else if (mode === 'paylater & cc' || mode === 'cc & paylater' || mode === 'credit card' || mode === 'card') {
+                            monthlyCcPayLater += amount;
+                        }
 
-                    // Add to monthly split total
-                    monthlySplit += splitAmount;
+                        // Add to monthly split total (only current month splits)
+                        monthlySplit += splitAmount;
+                    }
                 });
 
-                // Process ALL lend records and filter by current month/year pattern
+                // Process ALL lend records for all-time pending calculation
                 allLendSnap.forEach(doc => {
                     const data = doc.data();
-                    const docId = doc.id;
                     const status = data.status?.toLowerCase()?.trim();
 
-                    // Check if this lend record belongs to current month/year
-                    // Extract date from document ID (format: DD-MM-YYYY_lend_N)
-                    const dateMatch = docId.match(/^(\d{2})-(\d{2})-(\d{4})_/);
-                    if (dateMatch) {
-                        const [, day, docMonth, docYear] = dateMatch;
-                        const lendMonth = parseInt(docMonth, 10);
-                        const lendYear = parseInt(docYear, 10);
-
-                        // Only count if it's from current month/year and status is pending
-                        if (lendMonth === month && lendYear === year && status === 'pending') {
-                            monthlyLend += data.amount || 0;
-                        }
-                    }
-                    // Also check dateId field as fallback (for records with dateId field)
-                    else if (data.dateId) {
-                        const dateIdMatch = data.dateId.match(/^(\d{2})-(\d{2})-(\d{4})$/);
-                        if (dateIdMatch) {
-                            const [, day, docMonth, docYear] = dateIdMatch;
-                            const lendMonth = parseInt(docMonth, 10);
-                            const lendYear = parseInt(docYear, 10);
-
-                            if (lendMonth === month && lendYear === year && status === 'pending') {
-                                monthlyLend += data.amount || 0;
-                            }
-                        }
+                    // Count ALL pending lends regardless of date
+                    if (status === 'pending') {
+                        allTimeLendPending += data.amount || 0;
+                        console.log('Found pending lend:', doc.id, data.amount);
                     }
                 });
 
+                console.log('Dashboard totals calculated:', {
+                    todayTotal,
+                    todayUpiCash,
+                    monthlyUpiCash,
+                    monthlyCcPayLater,
+                    allTimeLendPending,
+                    monthlySplit
+                });
+
+                // Update dashboard display
                 document.getElementById('todayTotal').textContent = formatCurrency(todayTotal);
                 document.getElementById('todayUpiCash').textContent = formatCurrency(todayUpiCash);
                 document.getElementById('monthlyUpiCash').textContent = formatCurrency(monthlyUpiCash);
                 document.getElementById('monthlyCcPayLater').textContent = formatCurrency(monthlyCcPayLater);
-                document.getElementById('monthlyLend').textContent = formatCurrency(monthlyLend);
+                document.getElementById('monthlyLend').textContent = formatCurrency(allTimeLendPending);
                 document.getElementById('monthlySplit').textContent = formatCurrency(monthlySplit);
 
             } catch (error) {
