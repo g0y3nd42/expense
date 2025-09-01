@@ -6,23 +6,42 @@
   <title>Account Tracker</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+
+    :root {
+      --primary: #000;
+      --accent: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --background: #fafafa;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #111827;
+      --text-secondary: #6b7280;
+      --text-light: #9ca3af;
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+      --radius: 8px;
+    }
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
     
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f8fafc;
-      min-height: 100vh;
-      padding: 20px;
-      color: #1a202c;
+        body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.5;
+      padding-top: 50px;
+      font-size: 14px;
     }
-    
+
     .container {
-      max-width: 480px;
+      max-width: 428px;
       margin: 0 auto;
+      background: var(--surface);
+      min-height: 100vh;
     }
     
     .header {
@@ -37,6 +56,79 @@
       margin-bottom: 8px;
     }
     
+    /* Navigation */
+    .mobile-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 50px;
+    }
+    
+    .nav-brand {
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--text);
+    }
+    
+    .nav-toggle {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px;
+      color: var(--text-secondary);
+    }
+    
+    .nav-menu {
+      position: fixed;
+      top: 50px;
+      left: 0;
+      width: 100%;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 8px;
+      display: none;
+      z-index: 999;
+    }
+    
+    .nav-menu.active {
+      display: block;
+    }
+    
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      text-decoration: none;
+      color: var(--text-secondary);
+      border-radius: 6px;
+      transition: all 0.2s;
+      font-weight: 500;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+    
+    .nav-link.active {
+      background: var(--accent);
+      color: white;
+    }
+    
+    .nav-icon {
+      margin-right: 8px;
+      width: 16px;
+      text-align: center;
+    }
+
+
+
     .balance-section {
       background: white;
       border-radius: 12px;
@@ -361,9 +453,26 @@
       margin-left: 4px;
       font-size: 10px;
     }
+
   </style>
 </head>
 <body>
+
+    <nav class="mobile-nav">
+    <div class="nav-brand">Account Details</div>
+    <button class="nav-toggle" id="navToggle">☰</button>
+    <ul class="nav-menu" id="navMenu">
+      <li><a href="index.html" class="nav-link"><span class="nav-icon">💰</span>Expenses</a></li>
+      <li><a href="lend.html" class="nav-link"><span class="nav-icon">🤝</span>Lend Records</a></li>
+      <li><a href="account.html" class="nav-link active"><span class="nav-icon">🪪</span>Account Details</a></li>
+      <li><a href="borrow.html" class="nav-link"><span class="nav-icon">🏦</span>Borrow Details</a></li>
+    </ul>
+  </nav>
+
+
+
+
+
   <div class="container">
     <div class="header">
       <h1 class="header-title">Account Tracker</h1>
@@ -448,6 +557,20 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+
+    // Navigation
+    const navToggle = document.getElementById('navToggle');
+    const navMenu = document.getElementById('navMenu');
+    
+    navToggle.addEventListener('click', () => {
+      navMenu.classList.toggle('active');
+    });
+    
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
+        navMenu.classList.remove('active');
+      }
+    });
     // Cache management
     const CACHE_DURATION = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
     const TRANSACTIONS_PER_PAGE = 15;
