@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Account Tracker</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-
     :root {
       --primary: #000;
       --accent: #2563eb;
@@ -22,13 +22,14 @@
       --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
       --radius: 8px;
     }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    
-        body {
+
+    body {
       font-family: 'Inter', system-ui, sans-serif;
       background: var(--background);
       color: var(--text);
@@ -43,19 +44,19 @@
       background: var(--surface);
       min-height: 100vh;
     }
-    
+
     .header {
       text-align: center;
       margin-bottom: 24px;
     }
-    
+
     .header-title {
       font-size: 24px;
       font-weight: 600;
       color: #1a202c;
       margin-bottom: 8px;
     }
-    
+
     /* Navigation */
     .mobile-nav {
       position: fixed;
@@ -71,13 +72,13 @@
       align-items: center;
       height: 50px;
     }
-    
+
     .nav-brand {
       font-weight: 600;
       font-size: 16px;
       color: var(--text);
     }
-    
+
     .nav-toggle {
       background: none;
       border: none;
@@ -86,7 +87,7 @@
       padding: 4px;
       color: var(--text-secondary);
     }
-    
+
     .nav-menu {
       position: fixed;
       top: 50px;
@@ -98,11 +99,11 @@
       display: none;
       z-index: 999;
     }
-    
+
     .nav-menu.active {
       display: block;
     }
-    
+
     .nav-link {
       display: flex;
       align-items: center;
@@ -115,12 +116,12 @@
       font-size: 14px;
       margin-bottom: 2px;
     }
-    
+
     .nav-link.active {
       background: var(--accent);
       color: white;
     }
-    
+
     .nav-icon {
       margin-right: 8px;
       width: 16px;
@@ -137,19 +138,19 @@
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       text-align: center;
     }
-    
+
     .balance-label {
       font-size: 14px;
       color: #64748b;
       margin-bottom: 8px;
     }
-    
+
     .balance-amount {
       font-size: 32px;
       font-weight: 600;
       color: #1a202c;
     }
-    
+
     .add-button {
       width: 100%;
       background: #10b981;
@@ -163,11 +164,11 @@
       margin-bottom: 16px;
       transition: background 0.2s ease;
     }
-    
+
     .add-button:hover {
       background: #059669;
     }
-    
+
     .form-card {
       background: white;
       border-radius: 12px;
@@ -176,30 +177,30 @@
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       display: none;
     }
-    
+
     .form-card.show {
       display: block;
     }
-    
+
     .form-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
       gap: 12px;
       margin-bottom: 16px;
     }
-    
+
     .input-group {
       display: flex;
       flex-direction: column;
     }
-    
+
     .input-label {
       font-size: 12px;
       font-weight: 500;
       color: #64748b;
       margin-bottom: 4px;
     }
-    
+
     .form-input {
       padding: 12px;
       border: 1px solid #e2e8f0;
@@ -207,36 +208,36 @@
       font-size: 14px;
       transition: border-color 0.2s ease;
     }
-    
+
     .form-input:focus {
       outline: none;
       border-color: #10b981;
     }
-    
+
     .form-controls {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
       margin-bottom: 16px;
     }
-    
+
     .control-group {
       display: flex;
       flex-direction: column;
     }
-    
+
     .control-label {
       font-size: 12px;
       font-weight: 500;
       color: #64748b;
       margin-bottom: 6px;
     }
-    
+
     .selection-group {
       display: flex;
       gap: 4px;
     }
-    
+
     .selection-option {
       flex: 1;
       padding: 8px 12px;
@@ -249,17 +250,17 @@
       font-size: 12px;
       font-weight: 500;
     }
-    
+
     .selection-option:hover {
       border-color: #cbd5e1;
     }
-    
+
     .selection-option.active {
       border-color: #10b981;
       background: #10b981;
       color: white;
     }
-    
+
     .submit-btn {
       width: 100%;
       background: #3b82f6;
@@ -272,11 +273,11 @@
       cursor: pointer;
       transition: background 0.2s ease;
     }
-    
+
     .submit-btn:hover {
       background: #2563eb;
     }
-    
+
     .filter-tabs {
       display: flex;
       background: white;
@@ -285,7 +286,7 @@
       margin-bottom: 16px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
-    
+
     .filter-tab {
       flex: 1;
       padding: 8px 12px;
@@ -299,12 +300,12 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    
+
     .filter-tab.active {
       background: #3b82f6;
       color: white;
     }
-    
+
     .transactions-list {
       background: white;
       border-radius: 12px;
@@ -312,7 +313,7 @@
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       margin-bottom: 16px;
     }
-    
+
     .transaction-item {
       display: flex;
       justify-content: space-between;
@@ -320,15 +321,15 @@
       padding: 16px 0;
       border-bottom: 1px solid #f1f5f9;
     }
-    
+
     .transaction-item:last-child {
       border-bottom: none;
     }
-    
+
     .transaction-left {
       flex: 1;
     }
-    
+
     .transaction-right {
       text-align: right;
       display: flex;
@@ -336,14 +337,14 @@
       align-items: flex-end;
       gap: 4px;
     }
-    
+
     .transaction-name {
       font-size: 16px;
       font-weight: 600;
       color: #1a202c;
       margin-bottom: 4px;
     }
-    
+
     .transaction-type {
       display: inline-block;
       padding: 2px 8px;
@@ -353,43 +354,43 @@
       text-transform: uppercase;
       margin-bottom: 4px;
     }
-    
+
     .transaction-type.credit {
       background: #dcfce7;
       color: #166534;
     }
-    
+
     .transaction-type.debit {
       background: #fee2e2;
       color: #991b1b;
     }
-    
+
     .transaction-amount {
       font-size: 18px;
       font-weight: 600;
       margin-bottom: 2px;
     }
-    
+
     .transaction-amount.credit {
       color: #10b981;
     }
-    
+
     .transaction-amount.debit {
       color: #ef4444;
     }
-    
+
     .transaction-balance {
       font-size: 12px;
       color: #64748b;
     }
-    
+
     .transaction-meta {
       font-size: 12px;
       color: #64748b;
       margin-top: 4px;
     }
-    
-    .transaction-method {
+
+    .transaction-method  {
       display: inline-block;
       background: #f1f5f9;
       padding: 2px 6px;
@@ -398,7 +399,15 @@
       font-weight: 500;
       margin-right: 8px;
     }
-    
+    .transaction-id-time{
+            display: inline-block;
+      background: #f1f5f9;
+      padding: 1px 3px;
+      border-radius: 2px;
+      font-size: 8px;
+      font-weight: 500;
+      margin-right: 4px;
+    }
     .load-more-btn {
       width: 100%;
       background: #f1f5f9;
@@ -412,28 +421,28 @@
       margin-bottom: 16px;
       transition: all 0.2s ease;
     }
-    
+
     .load-more-btn:hover {
       background: #e2e8f0;
     }
-    
+
     .load-more-btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
-    
+
     .no-transactions {
       text-align: center;
       padding: 40px 20px;
       color: #64748b;
     }
-    
+
     .loading {
       text-align: center;
       padding: 20px;
       color: #64748b;
     }
-    
+
     .cache-info {
       background: white;
       border-radius: 8px;
@@ -443,7 +452,7 @@
       color: #64748b;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
-    
+
     .cache-status {
       display: inline-block;
       padding: 2px 6px;
@@ -453,12 +462,12 @@
       margin-left: 4px;
       font-size: 10px;
     }
-
   </style>
 </head>
+
 <body>
 
-    <nav class="mobile-nav">
+  <nav class="mobile-nav">
     <div class="nav-brand">Account Details</div>
     <button class="nav-toggle" id="navToggle">☰</button>
     <ul class="nav-menu" id="navMenu">
@@ -484,7 +493,7 @@
     </div>
 
     <button id="toggleFormBtn" class="add-button">Add Transaction</button>
-    
+
     <div id="transactionForm" class="form-card">
       <div class="form-grid">
         <div class="input-group">
@@ -496,7 +505,7 @@
           <input type="number" id="amount" class="form-input" placeholder="0.00" step="0.01" />
         </div>
       </div>
-      
+
       <div class="form-controls">
         <div class="control-group">
           <div class="control-label">Type</div>
@@ -513,7 +522,7 @@
           </div>
         </div>
       </div>
-      
+
       <button id="addBtn" class="submit-btn">Add Transaction</button>
     </div>
 
@@ -541,7 +550,7 @@
   <!-- Load Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-  
+
   <script>
     // Initialize Firebase
     const firebaseConfig = {
@@ -561,11 +570,11 @@
     // Navigation
     const navToggle = document.getElementById('navToggle');
     const navMenu = document.getElementById('navMenu');
-    
+
     navToggle.addEventListener('click', () => {
       navMenu.classList.toggle('active');
     });
-    
+
     document.addEventListener('click', (e) => {
       if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
         navMenu.classList.remove('active');
@@ -574,7 +583,7 @@
     // Cache management
     const CACHE_DURATION = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
     const TRANSACTIONS_PER_PAGE = 15;
-    
+
     let transactionCache = {
       data: [],
       timestamp: null,
@@ -607,9 +616,9 @@
       if (transactionCache.data.length > 0) {
         const oldest = transactionCache.oldestCachedId;
         const newest = transactionCache.newestCachedId;
-        const cacheAge = transactionCache.timestamp ? 
+        const cacheAge = transactionCache.timestamp ?
           Math.round((Date.now() - transactionCache.timestamp) / (1000 * 60)) : 0;
-        
+
         cacheInfoEl.innerHTML = `
           Cache: ${oldest} to ${newest} 
           <span class="cache-status">${cacheAge}m old</span>
@@ -623,7 +632,7 @@
     async function fetchRecentTransactions() {
       try {
         console.log('Fetching recent transactions...');
-        
+
         // Get the latest 15 transactions
         const snapshot = await db.collection("account")
           .orderBy("timestamp", "desc")
@@ -638,16 +647,16 @@
         // Update cache
         transactionCache.data = transactions;
         transactionCache.timestamp = Date.now();
-        
+
         if (transactions.length > 0) {
           // Sort by transaction number to find oldest and newest
-          const sortedByNumber = transactions.sort((a, b) => 
+          const sortedByNumber = transactions.sort((a, b) =>
             getTransactionNumber(b.id) - getTransactionNumber(a.id)
           );
-          
+
           transactionCache.newestCachedId = sortedByNumber[0].id;
           transactionCache.oldestCachedId = sortedByNumber[sortedByNumber.length - 1].id;
-          
+
           // Check if there are more older transactions
           const oldestNumber = getTransactionNumber(transactionCache.oldestCachedId);
           transactionCache.hasMoreOld = oldestNumber > 1;
@@ -677,12 +686,12 @@
 
       try {
         console.log('Fetching newer transactions since:', transactionCache.newestCachedId);
-        
+
         const newestNumber = getTransactionNumber(transactionCache.newestCachedId);
-        
+
         // Get all transactions with ID higher than cached newest
         const snapshot = await db.collection("account").get();
-        
+
         const newerTransactions = snapshot.docs
           .map(doc => ({ id: doc.id, ...doc.data() }))
           .filter(tx => getTransactionNumber(tx.id) > newestNumber)
@@ -694,13 +703,13 @@
           // Add newer transactions to beginning of cache
           transactionCache.data = [...newerTransactions, ...transactionCache.data];
           transactionCache.newestCachedId = newerTransactions[0].id;
-          
+
           // Keep only latest 15 in cache
           if (transactionCache.data.length > TRANSACTIONS_PER_PAGE) {
             transactionCache.data = transactionCache.data.slice(0, TRANSACTIONS_PER_PAGE);
             transactionCache.oldestCachedId = transactionCache.data[transactionCache.data.length - 1].id;
           }
-          
+
           transactionCache.timestamp = Date.now();
         }
 
@@ -717,12 +726,12 @@
 
       try {
         console.log('Fetching older transactions before:', transactionCache.oldestCachedId);
-        
+
         const oldestNumber = getTransactionNumber(transactionCache.oldestCachedId);
-        
+
         // Get transactions with ID lower than cached oldest
         const snapshot = await db.collection("account").get();
-        
+
         const olderTransactions = snapshot.docs
           .map(doc => ({ id: doc.id, ...doc.data() }))
           .filter(tx => getTransactionNumber(tx.id) < oldestNumber)
@@ -735,7 +744,7 @@
           // Add older transactions to end of cache
           transactionCache.data = [...transactionCache.data, ...olderTransactions];
           transactionCache.oldestCachedId = olderTransactions[olderTransactions.length - 1].id;
-          
+
           // Check if there are more older transactions
           const newOldestNumber = getTransactionNumber(transactionCache.oldestCachedId);
           transactionCache.hasMoreOld = newOldestNumber > 1;
@@ -754,7 +763,7 @@
     function toggleForm() {
       const form = document.getElementById('transactionForm');
       const toggleBtn = document.getElementById('toggleFormBtn');
-      
+
       if (form.classList.contains('show')) {
         form.classList.remove('show');
         toggleBtn.textContent = 'Add Transaction';
@@ -764,42 +773,42 @@
         toggleBtn.textContent = 'Cancel';
       }
     }
-    
+
     function clearForm() {
       document.getElementById("description").value = "";
       document.getElementById("amount").value = "";
-      
+
       // Reset selections
       document.querySelectorAll('.selection-option').forEach(option => {
         option.classList.remove('active');
       });
-      
+
       // Set defaults
       document.querySelector('[data-value="debit"]').classList.add('active');
       document.querySelector('[data-value="UPI"]').classList.add('active');
     }
-    
+
     function setupSelections() {
       document.querySelectorAll('.selection-group').forEach(group => {
         group.addEventListener('click', (e) => {
           const option = e.target.closest('.selection-option');
           if (!option) return;
-          
+
           // Remove active from siblings
           group.querySelectorAll('.selection-option').forEach(opt => {
             opt.classList.remove('active');
           });
-          
+
           // Add active to clicked option
           option.classList.add('active');
         });
       });
     }
-    
+
     function getSelectedValues() {
       const typeOption = document.querySelector('.selection-group .selection-option.active[data-value="credit"], .selection-group .selection-option.active[data-value="debit"]');
       const methodOption = document.querySelector('.selection-group .selection-option.active:not([data-value="credit"]):not([data-value="debit"])');
-      
+
       return {
         type: typeOption ? typeOption.dataset.value : 'debit',
         method: methodOption ? methodOption.dataset.value : 'UPI'
@@ -812,13 +821,13 @@
         tab.addEventListener('click', (e) => {
           // Remove active from all tabs
           document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-          
+
           // Add active to clicked tab
           e.target.classList.add('active');
-          
+
           // Update current filter
           currentFilter = e.target.dataset.filter;
-          
+
           // Re-render transactions with filter
           renderTransactions(transactionCache.data);
         });
@@ -835,14 +844,14 @@
     async function getNextTransactionId() {
       try {
         const counterRef = db.collection('counters').doc('transactionCounter');
-        
+
         // First, try to get existing counter
         const counterDoc = await counterRef.get();
-        
+
         if (counterDoc.exists) {
           const currentCount = counterDoc.data().count;
           const newCount = currentCount + 1;
-          
+
           // Update counter
           await counterRef.update({ count: newCount });
           console.log('Generated ID:', `tnx_${newCount}`);
@@ -855,7 +864,7 @@
         }
       } catch (error) {
         console.error('Error in getNextTransactionId:', error);
-        
+
         // Simple fallback - just get count of existing documents + 1
         try {
           const snapshot = await db.collection('account').get();
@@ -874,14 +883,14 @@
     // Calculate running balance using database update_bal
     function calculateRunningBalance(transactions) {
       // Sort by timestamp ascending to get chronological order
-      const sortedTransactions = [...transactions].sort((a, b) => 
+      const sortedTransactions = [...transactions].sort((a, b) =>
         a.timestamp.toMillis() - b.timestamp.toMillis()
       );
-      
+
       // Use the update_bal from database if available, otherwise calculate
       let runningBalance = 0;
       const updatedTransactions = [];
-      
+
       sortedTransactions.forEach((tx, index) => {
         if (tx.update_bal !== undefined && tx.update_bal !== null) {
           // Use database update_bal
@@ -891,22 +900,22 @@
           const amount = parseFloat(tx.amount) || 0;
           runningBalance += tx.type === 'credit' ? amount : -amount;
         }
-        
+
         updatedTransactions.push({
           ...tx,
           update_bal: runningBalance
         });
       });
-      
+
       // Update current balance to the latest transaction's balance
       if (updatedTransactions.length > 0) {
         currentBalance = updatedTransactions[updatedTransactions.length - 1].update_bal;
       } else {
         currentBalance = 0;
       }
-      
+
       // Sort back to descending for display (newest first by timestamp)
-      return updatedTransactions.sort((a, b) => 
+      return updatedTransactions.sort((a, b) =>
         b.timestamp.toMillis() - a.timestamp.toMillis()
       );
     }
@@ -914,11 +923,11 @@
     // Render transactions
     function renderTransactions(transactions, append = false) {
       const listEl = document.getElementById("transactionsList");
-      
+
       if (!append) {
         listEl.innerHTML = "";
       }
-      
+
       if (transactions.length === 0 && !append) {
         listEl.innerHTML = '<div class="no-transactions">No transactions yet. Add your first transaction above!</div>';
         currentBalance = 0;
@@ -928,13 +937,13 @@
       }
 
       const transactionsWithBalance = calculateRunningBalance(transactionCache.data);
-      
+
       // Apply current filter
       const filteredTransactions = filterTransactions(transactionsWithBalance);
 
       // If appending, only render the new transactions
-      const transactionsToRender = append ? 
-        filteredTransactions.filter(tx => 
+      const transactionsToRender = append ?
+        filteredTransactions.filter(tx =>
           transactions.some(newTx => newTx.id === tx.id)
         ) : filteredTransactions;
 
@@ -942,19 +951,31 @@
         const div = document.createElement("div");
         div.className = `transaction-item`;
         div.setAttribute('data-tx-id', tx.id);
-        
+
         const amount = parseFloat(tx.amount) || 0;
         const sign = tx.type === 'credit' ? '+' : '';
         const formattedAmount = `${sign}₹${amount.toFixed(2)}`;
-        
+        //----------------Test-----------------------------------
+        function formatDateTime(timestamp) {
+          if (!timestamp) return '';
+          const dateObj = timestamp.toDate();
+          const options = {
+            month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit', hour12: true,
+            timeZone: 'Asia/Kolkata'
+          };
+          return dateObj.toLocaleString('en-IN', options);
+        }
+
+        //---------------------------------Test--------------------------------
         div.innerHTML = `
           <div class="transaction-left">
             <div class="transaction-name">${tx.description || 'No description'}</div>
             <div class="transaction-type ${tx.type}">${tx.type}</div>
             <div class="transaction-meta">
               <span class="transaction-method">${tx.method}</span>
-              <span>${tx.id}</span>
-              ${tx.auto_created ? ' • Auto-created' : ''}
+              <span class="transaction-id-time">${tx.id}
+                | • ${formatDateTime(tx.timestamp)} </span>
             </div>
           </div>
           <div class="transaction-right">
@@ -962,24 +983,24 @@
             <div class="transaction-balance">Balance: ₹${(tx.update_bal || 0).toFixed(2)}</div>
           </div>
         `;
-        
+
         listEl.appendChild(div);
       });
 
       // Update current balance using the most recent transaction's update_bal
       if (transactionsWithBalance.length > 0) {
         // Sort by timestamp to get the most recent transaction
-        const sortedByTime = transactionsWithBalance.sort((a, b) => 
+        const sortedByTime = transactionsWithBalance.sort((a, b) =>
           b.timestamp.toMillis() - a.timestamp.toMillis()
         );
         currentBalance = sortedByTime[0].update_bal || 0;
       } else {
         currentBalance = 0;
       }
-      
+
       console.log('Current balance updated to:', currentBalance);
       document.getElementById("currentBalance").innerText = `₹${currentBalance.toFixed(2)}`;
-      
+
       updateLoadMoreButton();
       updateCacheInfo();
     }
@@ -987,7 +1008,7 @@
     // Update load more button state
     function updateLoadMoreButton() {
       const loadMoreBtn = document.getElementById('loadMoreBtn');
-      
+
       if (transactionCache.hasMoreOld && transactionCache.data.length >= TRANSACTIONS_PER_PAGE) {
         loadMoreBtn.style.display = 'block';
         loadMoreBtn.disabled = isLoadingMore;
@@ -1018,7 +1039,7 @@
         renderTransactions(transactions);
       } catch (error) {
         console.error("Error loading initial transactions:", error);
-        document.getElementById("transactionsList").innerHTML = 
+        document.getElementById("transactionsList").innerHTML =
           '<div class="no-transactions">Error loading transactions. Please refresh the page.</div>';
       }
     }
@@ -1047,14 +1068,14 @@
     // Real-time listener for new transactions only
     function setupRealtimeListener() {
       console.log('Setting up realtime listener...');
-      
+
       // Listen only for the most recent transactions to catch new additions
       db.collection("account")
         .orderBy("timestamp", "desc")
         .limit(3) // Only watch the last 3 transactions for new additions
         .onSnapshot(async (snapshot) => {
           console.log('Realtime update detected...');
-          
+
           if (transactionCache.data.length === 0) {
             // If no cache, load initial transactions
             await loadInitialTransactions();
@@ -1068,7 +1089,7 @@
           }));
 
           const newestCachedNumber = getTransactionNumber(transactionCache.newestCachedId || 'tnx_0');
-          const hasNewTransactions = latestDocs.some(tx => 
+          const hasNewTransactions = latestDocs.some(tx =>
             getTransactionNumber(tx.id) > newestCachedNumber
           );
 
@@ -1102,16 +1123,16 @@
         // Get the incremental transaction ID
         const transactionId = await getNextTransactionId();
         console.log('Using transaction ID:', transactionId);
-        
+
         // Calculate new balance based on current balance
         const newBalance = currentBalance + (selections.type === 'credit' ? amount : -amount);
-        
+
         // Generate linked_expense_id (date-based format like your example)
         const now = new Date();
         const dateStr = now.toLocaleDateString('en-GB').replace(/\//g, '-');
         const timeStr = Math.floor(Math.random() * 10); // Random digit for uniqueness
         const linkedExpenseId = `${dateStr}_${timeStr}`;
-        
+
         // Add transaction with all fields matching your database structure
         const transactionData = {
           amount: amount,
@@ -1125,16 +1146,16 @@
         };
 
         await db.collection("account").doc(transactionId).set(transactionData);
-        
+
         console.log('Transaction added successfully:', {
           id: transactionId,
           data: transactionData
         });
-        
+
         // Clear form and hide it
         clearForm();
         toggleForm();
-        
+
       } catch (error) {
         console.error("Error adding transaction:", error);
         alert("Failed to add transaction. Please try again.");
@@ -1146,11 +1167,11 @@
       document.getElementById("toggleFormBtn").addEventListener("click", toggleForm);
       document.getElementById("addBtn").addEventListener("click", addTransaction);
       document.getElementById("loadMoreBtn").addEventListener("click", loadMoreTransactions);
-      
+
       // Setup selection groups and filters
       setupSelections();
       setupFilters();
-      
+
       // Add enter key support for inputs
       document.getElementById("description").addEventListener("keypress", (e) => {
         if (e.key === "Enter") addTransaction();
@@ -1158,14 +1179,15 @@
       document.getElementById("amount").addEventListener("keypress", (e) => {
         if (e.key === "Enter") addTransaction();
       });
-      
+
       // Load initial transactions and setup realtime listener
       loadInitialTransactions();
       setupRealtimeListener();
-      
+
       // Update cache info every minute
       setInterval(updateCacheInfo, 60000);
     };
   </script>
 </body>
+
 </html>
