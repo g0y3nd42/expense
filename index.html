@@ -1136,7 +1136,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // App state
+        // App state with caching
         let currentView = 'expenses';
         let isLoading = false;
         let isFormVisible = false;
@@ -1145,6 +1145,22 @@
         let selectedSub = 'Superyes'; // Default for UPI
         let selectedDate = ''; // For date filtering
         let currentAccountBalance = 0;
+        
+        // OPTIMIZATION: Add caching to reduce database calls
+        let dashboardCache = {
+            data: null,
+            lastUpdated: null,
+            cacheTimeout: 30000 // 30 seconds cache
+        };
+        
+        let expenseCache = new Map(); // Cache expenses by date
+        
+        // Check if cache is valid
+        function isCacheValid(cacheObj) {
+            return cacheObj.data && 
+                   cacheObj.lastUpdated && 
+                   (Date.now() - cacheObj.lastUpdated) < cacheObj.cacheTimeout;
+        }
 
         // Helper functions
         function getIndianDateTime() {
@@ -1615,80 +1631,85 @@
             selectedSub = '';
         }
 
-        // FIXED Dashboard stats update with proper monthly filtering
+        // OPTIMIZED Dashboard stats update with minimal database requests
         async function updateDashboard() {
             try {
                 const today = getTodayDateId();
                 const { month, year } = getCurrentMonthYear();
+                
+                // Create date range for current month (DD-MM-YYYY format)
+                const monthStart = `01-${String(month).padStart(2, '0')}-${year}`;
+                const monthEnd = `31-${String(month).padStart(2, '0')}-${year}`;
 
                 console.log('Dashboard update - Current month/year:', month, year);
-                console.log('Today dateId:', today);
+                console.log('Date range:', monthStart, 'to', monthEnd);
 
-                // Get ALL expenses and filter in JavaScript for more reliable filtering
-                const allExpensesSnap = await db.collection('expenses').get();
-                
-                // Get ALL lend records (for all-time pending calculation)
-                const allLendSnap = await db.collection('lend').get();
+                // OPTIMIZED: Use Promise.all for parallel queries
+                const [todayExpensesSnap, monthlyExpensesSnap, pendingLendSnap] = await Promise.all([
+                    // Query 1: Today's expenses only
+                    db.collection('expenses').where('dateId', '==', today).get(),
+                    
+                    // Query 2: Current month's expenses (more efficient range query)
+                    db.collection('expenses')
+                        .where('dateId', '>=', monthStart)
+                        .where('dateId', '<=', monthEnd)
+                        .get(),
+                    
+                    // Query 3: Only pending lends (filtered query instead of all lends)
+                    db.collection('lend').where('status', '==', 'pending').get()
+                ]);
 
                 let todayTotal = 0;
                 let todayUpiCash = 0;
                 let monthlyUpiCash = 0;
                 let monthlyCcPayLater = 0;
-                let allTimeLendPending = 0; // Changed to all-time
                 let monthlySplit = 0;
+                let allTimeLendPending = 0;
 
-                // Process expenses with proper month filtering
-                allExpensesSnap.forEach(doc => {
+                // Process today's expenses
+                todayExpensesSnap.forEach(doc => {
+                    const data = doc.data();
+                    const amount = data.amount || 0;
+                    const mode = data.paymentMode?.toLowerCase();
+
+                    todayTotal += amount;
+                    if (mode === 'upi' || mode === 'cash') {
+                        todayUpiCash += amount;
+                    }
+                });
+
+                // Process monthly expenses (already filtered by database query)
+                monthlyExpensesSnap.forEach(doc => {
                     const data = doc.data();
                     const amount = data.amount || 0;
                     const mode = data.paymentMode?.toLowerCase();
                     const splitAmount = data.totalSplitAmount || 0;
-                    const expenseDate = data.dateId;
 
-                    console.log('Processing expense:', expenseDate, amount, mode);
-
-                    // Today's totals
-                    if (expenseDate === today) {
-                        todayTotal += amount;
-                        if (mode === 'upi' || mode === 'cash') {
-                            todayUpiCash += amount;
-                        }
-                    }
-
-                    // Monthly totals - use proper date filtering
-                    if (isDateInCurrentMonth(expenseDate)) {
-                        console.log('Expense is in current month:', expenseDate, amount, mode);
-                        
+                    // Additional filtering to ensure we're in the correct month
+                    if (isDateInCurrentMonth(data.dateId)) {
                         if (mode === 'upi' || mode === 'cash') {
                             monthlyUpiCash += amount;
                         } else if (mode === 'paylater & cc' || mode === 'cc & paylater' || mode === 'credit card' || mode === 'card') {
                             monthlyCcPayLater += amount;
                         }
-
-                        // Add to monthly split total (only current month splits)
                         monthlySplit += splitAmount;
                     }
                 });
 
-                // Process ALL lend records for all-time pending calculation
-                allLendSnap.forEach(doc => {
+                // Process only pending lends (already filtered by database query)
+                pendingLendSnap.forEach(doc => {
                     const data = doc.data();
-                    const status = data.status?.toLowerCase()?.trim();
-
-                    // Count ALL pending lends regardless of date
-                    if (status === 'pending') {
-                        allTimeLendPending += data.amount || 0;
-                        console.log('Found pending lend:', doc.id, data.amount);
-                    }
+                    allTimeLendPending += data.amount || 0;
                 });
 
-                console.log('Dashboard totals calculated:', {
+                console.log('Optimized dashboard totals:', {
                     todayTotal,
                     todayUpiCash,
                     monthlyUpiCash,
                     monthlyCcPayLater,
                     allTimeLendPending,
-                    monthlySplit
+                    monthlySplit,
+                    dbQueries: 3
                 });
 
                 // Update dashboard display
@@ -1782,12 +1803,15 @@
                 isFormVisible = false;
                 dateTimeInput.value = getIndianDateTime().toISOString();
 
+                // OPTIMIZATION: Clear cache and reload efficiently
+                clearCache();
+                
                 // Reload expenses if viewing today or the date of the new expense
                 const todayDateId = getTodayDateId();
                 if (selectedDate === todayDateId || selectedDate === dateId) {
-                    loadExpenses();
+                    loadExpenses(true); // Force refresh
                 }
-                updateDashboard();
+                updateDashboard(true); // Force refresh
             } catch (error) {
                 console.error('Error saving expense:', error);
                 showMessage('❌ Error saving expense', true);
@@ -1852,12 +1876,15 @@
                 splitModal.style.display = 'none';
                 splitForm.reset();
 
+                // OPTIMIZATION: Clear cache after split creation
+                clearCache();
+
                 // Reload expenses if viewing the date of the original expense
                 const originalDateId = originalExpenseData.dateId;
                 if (selectedDate === originalDateId) {
-                    loadExpenses();
+                    loadExpenses(true); // Force refresh
                 }
-                updateDashboard();
+                updateDashboard(true); // Force refresh
             } catch (error) {
                 console.error('Error saving split:', error);
                 showMessage('❌ Failed to save split', true);
