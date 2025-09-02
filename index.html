@@ -306,10 +306,10 @@
             color: white;
         }
 
-        /* Payment Method Cards */
+        /* Payment Method Cards - Updated to 2x2 grid */
         .payment-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 0.4rem;
             margin-bottom: 0.75rem;
         }
@@ -372,6 +372,27 @@
             background: #10b981;
             color: white;
             border-color: #10b981;
+        }
+
+        /* Someone Else Paid name input */
+        .payer-name-input {
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .payer-name-input input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            background: #fff;
+        }
+
+        .payer-name-input input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
         }
 
         /* Form inputs */
@@ -477,6 +498,19 @@
             color: #8b5cf6;
             margin: 0.2rem 0;
             font-weight: 500;
+        }
+
+        /* Paid by someone else indicator */
+        .paid-by-info {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 4px;
+            padding: 0.3rem 0.5rem;
+            font-size: 0.7rem;
+            color: #92400e;
+            font-weight: 500;
+            margin: 0.3rem 0;
+            text-align: center;
         }
 
         .item button {
@@ -641,7 +675,7 @@
             }
 
             .payment-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
                 gap: 0.3rem;
             }
 
@@ -960,7 +994,7 @@
                     style="display: none;" />
                 <input type="number" id="amount" placeholder="Amount" min="0.01" step="0.01" required />
 
-                <!-- Payment Method Selection -->
+                <!-- Payment Method Selection - Updated to 2x2 Grid -->
                 <div class="payment-grid">
                     <!-- Cash -->
                     <div class="payment-card" data-payment="Cash">
@@ -988,12 +1022,23 @@
                             <div class="payment-sub" data-sub="Super Cred">Super Cred</div>
                         </div>
                     </div>
+
+                    <!-- Someone Else Paid -->
+                    <div class="payment-card" data-payment="Someone Else Paid">
+                        <div class="payment-title">👥 Someone Else Paid</div>
+                    </div>
+                </div>
+
+                <!-- Payer Name Input (appears when Someone Else Paid is selected) -->
+                <div class="payer-name-input" id="payerNameInput">
+                    <input type="text" id="payerName" placeholder="Who paid for this expense?" />
                 </div>
 
                 <textarea id="description" placeholder="Description (optional)" rows="2"></textarea>
                 <input type="hidden" id="selectedCategory" />
                 <input type="hidden" id="selectedPayment" />
                 <input type="hidden" id="selectedSub" />
+                <input type="hidden" id="selectedPayerName" />
                 <input type="hidden" id="dateTime" />
 
                 <div class="button-container">
@@ -1140,6 +1185,7 @@
         let selectedCategory = '';
         let selectedPayment = '';
         let selectedSub = 'Superyes'; // Default for UPI
+        let selectedPayerName = ''; // New variable for payer name
         let selectedDate = ''; // For date filtering
         let currentAccountBalance = 0;
 
@@ -1327,6 +1373,49 @@
             }
         }
 
+        // Generate unique borrow ID by checking ALL existing IDs
+        async function generateBorrowId(dateId) {
+            try {
+                console.log('Generating borrow ID for date:', dateId);
+
+                // Get ALL borrow documents that start with the dateId pattern
+                const allBorrowDocs = await db.collection('borrow').get();
+
+                // Filter documents that match our date pattern and extract their numbers
+                const existingNumbers = [];
+                const datePattern = `${dateId}_borrow_`;
+
+                allBorrowDocs.forEach(doc => {
+                    const docId = doc.id;
+                    if (docId.startsWith(datePattern)) {
+                        // Extract the number part (e.g., from "24-08-2025_borrow_3" get "3")
+                        const numberPart = docId.substring(datePattern.length);
+                        const num = parseInt(numberPart, 10);
+                        if (!isNaN(num)) {
+                            existingNumbers.push(num);
+                        }
+                    }
+                });
+
+                console.log('Existing borrow numbers for', dateId, ':', existingNumbers);
+
+                // Find the next available number
+                let nextNumber = 1;
+                while (existingNumbers.includes(nextNumber)) {
+                    nextNumber++;
+                }
+
+                const newBorrowId = `${dateId}_borrow_${nextNumber}`;
+                console.log('Generated new borrow ID:', newBorrowId);
+
+                return newBorrowId;
+            } catch (error) {
+                console.error('Error generating borrow ID:', error);
+                // Fallback to timestamp-based ID
+                return `${dateId}_borrow_${Date.now()}`;
+            }
+        }
+
         // Account integration functions
         async function getNextAccountTransactionId() {
             try {
@@ -1439,6 +1528,39 @@
             }
         }
 
+        // Create borrow record when someone else pays
+        async function createBorrowRecord(expenseData, expenseId, payerName) {
+            try {
+                console.log('Creating borrow record for expense paid by:', payerName);
+
+                const dt = getIndianDateTime();
+                const dateId = formatDateId(dt);
+                
+                // Generate unique borrow ID
+                const borrowId = await generateBorrowId(dateId);
+
+                const borrowData = {
+                    name: payerName,
+                    amount: expenseData.amount,
+                    description: `Paid for: ${expenseData.category} - ${expenseData.description || 'No description'}`,
+                    borrowMethod: 'Cash', // Default to cash for someone else paid
+                    status: 'pending',
+                    createdAt: firebase.firestore.Timestamp.now(),
+                    linkedExpenseId: expenseId,
+                    autoCreated: true
+                };
+
+                // Save to borrow collection
+                await db.collection('borrow').doc(borrowId).set(borrowData);
+
+                console.log('Borrow record created successfully:', borrowId);
+                return borrowId;
+            } catch (error) {
+                console.error('Error creating borrow record:', error);
+                throw error;
+            }
+        }
+
         async function loadAccountBalance() {
             try {
                 // Get the latest account transaction to show current balance
@@ -1488,6 +1610,8 @@
         const datePicker = document.getElementById('datePicker');
         const expenseListTitle = document.getElementById('expenseListTitle');
         const calendarIcon = document.getElementById('calendarIcon');
+        const payerNameInput = document.getElementById('payerNameInput');
+        const payerName = document.getElementById('payerName');
 
         // Initialize date picker with today's date
         const today = getIndianDateTime();
@@ -1550,11 +1674,13 @@
             }
         });
 
-        // Payment method selection
+        // Payment method selection - Updated to handle Someone Else Paid
         document.querySelectorAll('.payment-card').forEach(card => {
             card.addEventListener('click', () => {
                 // Hide all sub-options first
                 document.querySelectorAll('.payment-subs').forEach(sub => sub.classList.add('hidden'));
+                // Hide payer name input
+                payerNameInput.style.display = 'none';
 
                 // Remove previous selection
                 document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('selected'));
@@ -1564,22 +1690,35 @@
                 selectedPayment = card.dataset.payment;
                 document.getElementById('selectedPayment').value = selectedPayment;
 
-                // Show sub-options for UPI and PayLater & CC
-                const subs = card.querySelector('.payment-subs');
-                if (subs && (selectedPayment === 'UPI' || selectedPayment === 'PayLater & CC')) {
-                    subs.classList.remove('hidden');
-
-                    // Auto-select first sub-option or previously selected one
-                    const selectedSubEl = subs.querySelector('.payment-sub.selected') || subs.querySelector('.payment-sub');
-                    if (selectedSubEl) {
-                        selectedSub = selectedSubEl.dataset.sub;
-                        selectedSubEl.classList.add('selected');
-                    }
-                } else {
+                // Handle Someone Else Paid
+                if (selectedPayment === 'Someone Else Paid') {
+                    payerNameInput.style.display = 'block';
+                    payerName.focus();
                     selectedSub = '';
+                } else {
+                    // Show sub-options for UPI and PayLater & CC
+                    const subs = card.querySelector('.payment-subs');
+                    if (subs && (selectedPayment === 'UPI' || selectedPayment === 'PayLater & CC')) {
+                        subs.classList.remove('hidden');
+
+                        // Auto-select first sub-option or previously selected one
+                        const selectedSubEl = subs.querySelector('.payment-sub.selected') || subs.querySelector('.payment-sub');
+                        if (selectedSubEl) {
+                            selectedSub = selectedSubEl.dataset.sub;
+                            selectedSubEl.classList.add('selected');
+                        }
+                    } else {
+                        selectedSub = '';
+                    }
                 }
                 document.getElementById('selectedSub').value = selectedSub;
             });
+        });
+
+        // Payer name input handling
+        payerName.addEventListener('input', (e) => {
+            selectedPayerName = e.target.value.trim();
+            document.getElementById('selectedPayerName').value = selectedPayerName;
         });
 
         // Payment sub-option selection
@@ -1634,9 +1773,11 @@
             document.querySelectorAll('.payment-sub').forEach(s => s.classList.remove('selected'));
             document.querySelectorAll('.payment-subs').forEach(sub => sub.classList.add('hidden'));
             customCategory.style.display = 'none';
+            payerNameInput.style.display = 'none';
             selectedCategory = '';
             selectedPayment = '';
             selectedSub = '';
+            selectedPayerName = '';
         }
 
         // OPTIMIZED Dashboard stats update with minimal database requests
@@ -1681,7 +1822,7 @@
                     const mode = data.paymentMode?.toLowerCase();
 
                     todayTotal += amount;
-                    if (mode === 'upi' || mode === 'cash') {
+                    if (mode === 'upi' || mode === 'cash' || mode === 'someone else paid') {
                         todayUpiCash += amount;
                     }
                 });
@@ -1695,7 +1836,7 @@
 
                     // Additional filtering to ensure we're in the correct month
                     if (isDateInCurrentMonth(data.dateId)) {
-                        if (mode === 'upi' || mode === 'cash') {
+                        if (mode === 'upi' || mode === 'cash' || mode === 'someone else paid') {
                             monthlyUpiCash += amount;
                         } else if (mode === 'paylater & cc' || mode === 'cc & paylater' || mode === 'credit card' || mode === 'card') {
                             monthlyCcPayLater += amount;
@@ -1733,12 +1874,19 @@
             }
         }
 
-        // Form submission with account integration - FIXED
+        // Form submission with account integration and Someone Else Paid - UPDATED
         expenseForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             if (!selectedCategory || !selectedPayment) {
                 showMessage('Please select category and payment method', true);
+                return;
+            }
+
+            // Validate payer name for Someone Else Paid
+            if (selectedPayment === 'Someone Else Paid' && !selectedPayerName.trim()) {
+                showMessage('Please enter the name of who paid for this expense', true);
+                payerName.focus();
                 return;
             }
 
@@ -1783,25 +1931,44 @@
                     data.subMethod = selectedSub;
                 }
 
+                // Handle Someone Else Paid
+                if (selectedPayment === 'Someone Else Paid') {
+                    data.paidBy = selectedPayerName;
+                    data.isPaidByOther = true;
+                }
+
                 // Save the expense
                 await db.collection('expenses').doc(newId).set(data);
 
-                // Auto-create account transaction for UPI payments
-                let accountTransactionId = null;
-                const isUpiPayment = selectedPayment.toLowerCase() === 'upi' ||
-                    (selectedPayment.toLowerCase().includes('upi'));
+                let messages = [`✅ Expense saved as ${newId}`];
 
-                if (isUpiPayment) {
+                // Create borrow record if someone else paid
+                if (selectedPayment === 'Someone Else Paid') {
                     try {
-                        accountTransactionId = await createAccountTransaction(data, newId);
-                        showMessage(`✅ Expense saved as ${newId} + Account debited (${accountTransactionId})`);
-                    } catch (accountError) {
-                        console.error('Account transaction failed:', accountError);
-                        showMessage(`✅ Expense saved as ${newId} (Account sync failed)`, false);
+                        const borrowId = await createBorrowRecord(data, newId, selectedPayerName);
+                        messages.push(`📝 Borrow record created: ${borrowId}`);
+                    } catch (borrowError) {
+                        console.error('Borrow record creation failed:', borrowError);
+                        messages.push('⚠️ Borrow record creation failed');
                     }
                 } else {
-                    showMessage(`✅ Expense saved as ${newId}`);
+                    // Auto-create account transaction for UPI payments (existing logic)
+                    let accountTransactionId = null;
+                    const isUpiPayment = selectedPayment.toLowerCase() === 'upi' ||
+                        (selectedPayment.toLowerCase().includes('upi'));
+
+                    if (isUpiPayment) {
+                        try {
+                            accountTransactionId = await createAccountTransaction(data, newId);
+                            messages.push(`💳 Account debited (${accountTransactionId})`);
+                        } catch (accountError) {
+                            console.error('Account transaction failed:', accountError);
+                            messages.push('⚠️ Account sync failed');
+                        }
+                    }
                 }
+
+                showMessage(messages.join(' | '));
 
                 // Reset form and hide
                 resetForm();
@@ -1965,12 +2132,17 @@
                     const remainingAmount = d.amount - totalSplitAmount;
                     const splitInfo = totalSplitAmount > 0 ? `Split: ${formatCurrency(totalSplitAmount)} of ${formatCurrency(d.amount)}` : '';
 
+                    // Check if paid by someone else
+                    const isPaidByOther = d.isPaidByOther || false;
+                    const paidByInfo = isPaidByOther ? `<div class="paid-by-info">💰 Paid by: ${d.paidBy}</div>` : '';
+
                     div.innerHTML = `
                 <div class="item-header">
                   <div class="item-category">${d.category}</div>
                   <div class="item-payment">${d.paymentMode}${d.subMethod ? ` (${d.subMethod})` : ''}</div>
                 </div>
                 <div class="item-description">${d.description || ''}</div>
+                ${paidByInfo}
                 ${splitInfo ? `<div class="split-info">${splitInfo}</div>` : ''}
                 <div class="item-footer">
                   <div class="item-date">${formattedDate}</div>
@@ -1981,11 +2153,16 @@
                     const btn = document.createElement('button');
                     btn.textContent = 'Split';
 
-                    // Disable split button if no amount remaining
+                    // Disable split button if no amount remaining OR if paid by someone else
                     if (remainingAmount <= 0) {
                         btn.disabled = true;
                         btn.textContent = 'Fully Split';
                         btn.style.background = '#9ca3af';
+                    } else if (isPaidByOther) {
+                        btn.disabled = true;
+                        btn.textContent = 'Can\'t Split';
+                        btn.style.background = '#9ca3af';
+                        btn.title = 'Cannot split expenses paid by others';
                     } else {
                         btn.onclick = () => openSplitModal(expense.id, d);
                     }
@@ -2002,6 +2179,12 @@
         // Open split modal
         async function openSplitModal(expenseId, expenseData) {
             try {
+                // Check if expense was paid by someone else
+                if (expenseData.isPaidByOther) {
+                    showMessage('❌ Cannot split expenses paid by others', true);
+                    return;
+                }
+
                 // Calculate current total split amount from database
                 const currentTotalSplit = await getTotalSplitAmount(expenseId);
                 const availableAmount = expenseData.amount - currentTotalSplit;
